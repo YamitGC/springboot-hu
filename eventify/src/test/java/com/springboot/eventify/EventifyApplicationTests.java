@@ -1,10 +1,10 @@
-package com.springboot.semana01;
+package com.springboot.eventify;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Semana01ApplicationTests {
+class EventifyApplicationTests {
 
     @Test
     void contextLoads() {

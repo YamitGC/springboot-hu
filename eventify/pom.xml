@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.springboot</groupId>
-    <artifactId>semana-01</artifactId>
+    <artifactId>eventify</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>semana-01</name>
-    <description>semana-01</description>
+    <name>eventify</name>
+    <description>eventify</description>
     <url/>
     <licenses>
         <license/>
