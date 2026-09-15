@@ -25,7 +25,7 @@ public class EventController{
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registrar un nuevo evento", description = "Valida y almacena un evento en la DB")
-    public Event create(Event event){
+    public Event create(@RequestBody Event event){
         return eventService.save(event);
     }
 
