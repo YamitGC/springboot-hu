@@ -53,5 +53,11 @@ public class VenueService {
         if (venue.getNombre() == null || venue.getNombre().trim().isEmpty()) {
             throw new InvalidDataException("El nombre del lugar no puede estar vacío");
         }
+        if (venue.getDireccion() == null || venue.getDireccion().trim().isEmpty()){
+            throw new InvalidDataException("La dirección del lugar no puede ir vacía");
+        }
+        if (venue.getDireccion() == null || venue.getDireccion().trim().isEmpty()){
+            throw new InvalidDataException("La dirección del lugar no puede ir vacía");
+        }
     }
 }
