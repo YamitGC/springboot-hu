@@ -16,6 +16,7 @@ Cada carpeta representa una semana de trabajo y contiene el proyecto Spring Boot
 ## Estructura del repositorio
 
 
+```text
 .
 ├── eventify/
 ├── eventify-semana02/
@@ -23,7 +24,7 @@ Cada carpeta representa una semana de trabajo y contiene el proyecto Spring Boot
 ├── eventify-semana04/
 ├── eventify-semana05/
 └── README.md
-
+```
 
 Cada carpeta semanal representa una versión funcional del proyecto. Puedes ingresar a cualquiera de ellas para ver el código específico de esa semana, y cada una puede ejecutarse de manera independiente con su propio wrapper de Maven.
 
