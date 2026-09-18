@@ -17,6 +17,7 @@ public class EventService {
     }
 
     public Event save(Event event){
+        event.setId(null);
         validar(event);
         return eventRepository.save(event);
     }

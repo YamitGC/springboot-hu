@@ -19,6 +19,7 @@ public class VenueService {
     }
 
     public Venue save(Venue venue){
+        venue.setId(null);
         validar(venue);
         return venueRepository.save(venue);
     }
@@ -56,8 +57,8 @@ public class VenueService {
         if (venue.getDireccion() == null || venue.getDireccion().trim().isEmpty()){
             throw new InvalidDataException("La dirección del lugar no puede ir vacía");
         }
-        if (venue.getDireccion() == null || venue.getDireccion().trim().isEmpty()){
-            throw new InvalidDataException("La dirección del lugar no puede ir vacía");
+        if (venue.getCapacidad() == null || venue.getCapacidad() <= 0){
+            throw new InvalidDataException("La capacidad debe ser un número entero mayor a 0");
         }
     }
 }

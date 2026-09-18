@@ -17,6 +17,7 @@ public class Venue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @io.swagger.v3.oas.annotations.media.Schema(accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Column(nullable = false, length = 150)
