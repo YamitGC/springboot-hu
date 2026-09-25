@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Eventos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1>Catálogo de eventos</h1>
+
+    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+
+    <p><a class="btn" th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
+
+    <div class="empty-state" th:unless="${!eventos.isEmpty()}">
+        <p>Actualmente no hay eventos programados.</p>
+    </div>
+
+    <table th:if="${!eventos.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="evento : ${eventos}">
+            <td th:text="${evento.id}">1</td>
+            <td th:text="${evento.nombre}">Nombre de ejemplo</td>
+            <td th:text="${evento.fecha}">2026-01-01</td>
+            <td th:text="${evento.descripcion}">Descripción</td>
+            <td>
+                <div style="display:flex; flex-wrap:wrap; gap:0.25rem;">
+                    <a class="btn btn-view" th:href="@{/admin/events/{id}(id=${evento.id})}">Ver</a>
+                    <a class="btn btn-edit" th:href="@{/admin/events/{id}/edit(id=${evento.id})}">Editar</a>
+                    <form th:action="@{/admin/events/{id}/delete(id=${evento.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este evento?');" style="display:inline;">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Navegación entre páginas -->
+    <div class="pagination" th:if="${pagina.totalPages > 1}">
+        <a th:if="${pagina.hasPrevious()}"
+           th:href="@{/admin/events(page=${pagina.number - 1}, size=${pagina.size})}">&laquo; Anterior</a>
+
+        <a th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+           th:href="@{/admin/events(page=${i}, size=${pagina.size})}"
+           th:text="${i + 1}"
+           th:classappend="${i == pagina.number} ? 'active'">1</a>
+
+        <a th:if="${pagina.hasNext()}"
+           th:href="@{/admin/events(page=${pagina.number + 1}, size=${pagina.size})}">Siguiente &raquo;</a>
+    </div>
+
+    <p th:if="${pagina != null}">
+        Página <span th:text="${pagina.number + 1}">1</span> de
+        <span th:text="${pagina.totalPages}">1</span>
+        (<span th:text="${pagina.totalElements}">0</span> eventos en total)
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

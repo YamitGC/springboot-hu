@@ -1,0 +1,192 @@
+/* src/main/resources/static/css/styles.css */
+body {
+    font-family: -apple-system, Segoe UI, sans-serif;
+    margin: 0;
+    background-color: #f7f7fa;
+    color: #222;
+}
+
+nav {
+    background-color: #1f2937;
+    padding: 1rem 2rem;
+}
+
+nav a {
+    color: white;
+    margin-right: 1.5rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th:last-child,
+td:last-child {
+    width: 220px;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    color: #555;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.error {
+    color: #b91c1c;
+    font-size: 0.875rem;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+form .field {
+    margin-bottom: 1rem;
+}
+
+form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+}
+
+td a {
+    margin-right: 0.5rem;
+}
+
+td form {
+    display: inline;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination a {
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #2563eb;
+}
+
+.pagination a.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 0.15rem 0.25rem 0.15rem 0;
+    white-space: nowrap;
+}
+
+.btn-view {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.btn-view:hover {
+    background-color: #c7d2fe;
+}
+
+.btn-edit {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.btn-edit:hover {
+    background-color: #fde68a;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+}

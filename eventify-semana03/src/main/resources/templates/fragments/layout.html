@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Este <head> nunca se renderiza directamente: solo sirve de "contenedor"
+         para declarar los fragmentos reutilizables. -->
+    <meta charset="UTF-8"/>
+    <title>Fragmentos</title>
+</head>
+<body>
+
+<nav th:fragment="nav">
+    <a th:href="@{/admin/events}">Eventos</a>
+    <a th:href="@{/admin/venues}">Lugares</a>
+</nav>
+
+<footer th:fragment="footer">
+    <p style="text-align:center; color:#888; padding:1rem;">Eventify — Panel administrativo</p>
+</footer>
+
+</body>
+</html>

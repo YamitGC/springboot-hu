@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${event.id == null} ? 'Registrar nuevo evento' : 'Editar evento'">Evento</h1>
+
+    <form th:action="${event.id == null} ? @{/admin/events} : @{/admin/events/__${event.id}__/edit}"
+          th:object="${event}" method="post">
+
+        <input type="hidden" th:if="${event.id != null}" th:field="*{id}"/>
+
+        <div class="field">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" th:field="*{nombre}"/>
+            <p class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" th:field="*{fecha}"/>
+            <p class="error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" rows="4"></textarea>
+            <p class="error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">Error</p>
+        </div>
+
+        <button type="submit" class="btn" th:text="${event.id == null} ? 'Guardar' : 'Actualizar'">Guardar</button>
+        <a th:href="@{/admin/events}">Cancelar</a>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

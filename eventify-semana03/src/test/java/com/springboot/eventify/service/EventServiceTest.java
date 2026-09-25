@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +36,13 @@ class EventServiceTest {
 
     @BeforeEach
     void setUp() {
-        validEvent = new Event(null, "Conferencia Java", "2026-10-10", "Charla técnica de backend");
+        validEvent = new Event(null, "Conferencia Java", LocalDate.of(2026, 10, 10), "Charla técnica de backend");
     }
 
     @Test
     void save_ValidEvent_ReturnsSavedEvent() {
         // Arrange (Preparar)
-        Event savedMock = new Event(1L, "Conferencia Java", "2026-10-10", "Charla técnica de backend");
+        Event savedMock = new Event(1L, "Conferencia Java", LocalDate.of(2026, 10, 10), "Charla técnica de backend");
         when(eventRepository.save(validEvent)).thenReturn(savedMock);
 
         // Act (Actuar)
@@ -57,7 +58,7 @@ class EventServiceTest {
     @Test
     void save_EmptyName_ThrowsInvalidDataException() {
         // Arrange (Preparar)
-        Event invalidEvent = new Event(null, "   ", "2026-10-10", "Descripción");
+        Event invalidEvent = new Event(null, "   ", LocalDate.of(2026, 10, 10), "Descripción");
 
         // Act & Assert (Actuar y Verificar)
         assertThrows(InvalidDataException.class, () -> eventService.save(invalidEvent));
@@ -67,7 +68,7 @@ class EventServiceTest {
     @Test
     void save_NullName_ThrowsInvalidDataException() {
         // Arrange (Preparar)
-        Event invalidEvent = new Event(null, null, "2026-10-10", "Descripción");
+        Event invalidEvent = new Event(null, null, LocalDate.of(2026, 10, 10), "Descripción");
 
         // Act & Assert (Actuar y Verificar)
         assertThrows(InvalidDataException.class, () -> eventService.save(invalidEvent));
@@ -79,7 +80,7 @@ class EventServiceTest {
         // Arrange (Preparar)
         Pageable pageable = PageRequest.of(0, 10);
         List<Event> mockList = new ArrayList<>();
-        mockList.add(new Event(1L, "Evento 1", "2026-10-10", "Desc 1"));
+        mockList.add(new Event(1L, "Evento 1", LocalDate.of(2026, 10, 10), "Desc 1"));
         Page<Event> mockPage = new PageImpl<>(mockList, pageable, 1);
         when(eventRepository.findAll(pageable)).thenReturn(mockPage);
 
@@ -95,8 +96,7 @@ class EventServiceTest {
     @Test
     void findById_ExistingId_ReturnsEvent() {
         // Arrange
-        Event event = new Event(1L, "Conferencia Java", "2026-10-10", "Desc");
-        when(eventRepository.findById(1L)).thenReturn(java.util.Optional.of(event));
+        Event event = new Event(1L, "Conferencia Java", LocalDate.of(2026, 10, 10), "Desc");        when(eventRepository.findById(1L)).thenReturn(java.util.Optional.of(event));
 
         // Act
         Event result = eventService.findById(1L);

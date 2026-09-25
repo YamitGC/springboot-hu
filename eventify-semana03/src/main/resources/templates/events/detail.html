@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Detalle del evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${event.nombre}">Nombre del evento</h1>
+
+    <table>
+        <tr><th>ID</th><td th:text="${event.id}">1</td></tr>
+        <tr><th>Nombre</th><td th:text="${event.nombre}">Nombre</td></tr>
+        <tr><th>Fecha</th><td th:text="${event.fecha}">2026-01-01</td></tr>
+        <tr><th>Descripción</th><td th:text="${event.descripcion}">Descripción</td></tr>
+    </table>
+
+    <p>
+        <a class="btn" th:href="@{/admin/events/{id}/edit(id=${event.id})}">Editar</a>
+        <a class="btn btn-secondary" th:href="@{/admin/events}">Volver al listado</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

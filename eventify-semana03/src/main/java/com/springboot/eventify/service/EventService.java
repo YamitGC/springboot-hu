@@ -51,11 +51,12 @@ public class EventService {
         if(event.getNombre() == null || event.getNombre().trim().isEmpty()){
             throw new InvalidDataException("El nombre del evento no puede estar vacío");
         }
-        if(event.getFecha() == null || event.getFecha().trim().isEmpty()){
-            throw new InvalidDataException("La fecha del evento no puede ir vacío");
+        if(event.getFecha() == null){
+            throw new InvalidDataException("La fecha del evento no puede ir vacía");
         }
         if(event.getDescripcion() == null || event.getDescripcion().trim().isEmpty()){
             throw new InvalidDataException("La descripcion del evento no puede estar vacía");
         }
     }
+
 }

@@ -1,0 +1,2185 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+src/
+  main/
+    java/
+      com/
+        springboot/
+          eventify/
+            config/
+              DataSeederConfig.java
+            controller/
+              EventController.java
+              EventViewController.java
+              VenueController.java
+              VenueViewController.java
+            exception/
+              GlobalExceptionHandler.java
+              InvalidDataException.java
+              ResourceNotFoundException.java
+            model/
+              Event.java
+              Venue.java
+            repository/
+              EventRepository.java
+              VenueRepository.java
+            service/
+              EventService.java
+              VenueService.java
+            EventifyApplication.java
+    resources/
+      static/
+        css/
+          styles.css
+      templates/
+        events/
+          detail.html
+          form.html
+          list.html
+        fragments/
+          error.html
+          layout.html
+        venues/
+          detail.html
+          form.html
+          list.html
+      application.properties
+  test/
+    java/
+      com/
+        springboot/
+          eventify/
+            repository/
+              EventRepositoryTest.java
+              VenueRepositoryTest.java
+            service/
+              EventServiceTest.java
+              VenueServiceTest.java
+            web/
+              EventViewControllerTest.java
+              VenueViewControllerTest.java
+            EventifyApplicationTests.java
+    resources/
+      application.properties
+.gitattributes
+.gitignore
+pom.xml
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/main/java/com/springboot/eventify/config/DataSeederConfig.java">
+package com.springboot.eventify.config;
+
+import com.springboot.eventify.service.*;
+import com.springboot.eventify.model.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDate;
+
+@Configuration
+public class DataSeederConfig {
+
+    @Bean
+    public boolean seedInitialData(EventService eventService, VenueService venueService) {
+        // --- 15 Lugares (Venues) ---
+        venueService.save(new Venue(null, "Centro de Convenciones Metropolitano", "Av. El Sol 123", 1200));
+        venueService.save(new Venue(null, "Auditorio Innovación Tech", "Calle 72 #45-10", 350));
+        venueService.save(new Venue(null, "Pabellón de Cristal", "Malecón del Río Sector 2", 800));
+        venueService.save(new Venue(null, "Teatro Universitario Santander", "Carrera 30 #45-03", 650));
+        venueService.save(new Venue(null, "Arena Bicentenario", "Diagonal 68 #22-15", 5000));
+        venueService.save(new Venue(null, "Espacio Coworking Hub Labs", "Calle 100 #15-32 Piso 4", 80));
+        venueService.save(new Venue(null, "Hotel Grand Plaza Ballroom", "Av. Circunvalar #88-20", 450));
+        venueService.save(new Venue(null, "Centro Cultural Las Bóvedas", "Plaza Bolívar #4-12", 200));
+        venueService.save(new Venue(null, "Campus Tecnológico OpenSpace", "Autopista Norte Km 14", 500));
+        venueService.save(new Venue(null, "Auditorio Central de Negocios", "Calle 53 #10-60", 250));
+        venueService.save(new Venue(null, "Sala Multimedia Nexus", "Carrera 15 #93-08", 120));
+        venueService.save(new Venue(null, "Parque Empresarial Auditorio A", "Av. Esperanza #68B-85", 300));
+        venueService.save(new Venue(null, "Estudio Creativo La Fábrica", "Calle 4sur #43A-195", 160));
+        venueService.save(new Venue(null, "Centro Empresarial Torre Norte", "Carrera 7 #116-50", 180));
+        venueService.save(new Venue(null, "Coliseo Deportivo y Eventos", "Av. Deportistas Transversal 12", 3500));
+
+        // --- 15 Eventos (Events) ---
+        eventService.save(new Event(null, "Conferencia Tech 2026", LocalDate.of(2026, 10, 15), "Encuentro anual de arquitectura de software e IA"));
+        eventService.save(new Event(null, "Workshop Spring Boot & JPA", LocalDate.of(2026, 10, 22), "Taller intensivo de backend moderno y microservicios"));
+        eventService.save(new Event(null, "DevOps Days Latam", LocalDate.of(2026, 11, 5), "Charlas sobre CI/CD, Kubernetes y contenedores"));
+        eventService.save(new Event(null, "Hackathon Universitario 48h", LocalDate.of(2026, 11, 14), "Competencia de desarrollo de soluciones tecnológicas"));
+        eventService.save(new Event(null, "Cumbre de Ciberseguridad", LocalDate.of(2026, 11, 28), "Estrategias de defensa, pentesting y seguridad cloud"));
+        eventService.save(new Event(null, "Foro de Emprendimiento Digital", LocalDate.of(2026, 12, 3), "Panel con fundadores de startups tecnológicas"));
+        eventService.save(new Event(null, "Bootcamp de Testing Automatizado", LocalDate.of(2026, 12, 10), "Sesión práctica de pruebas unitarias y de integración"));
+        eventService.save(new Event(null, "Feria de Innovación Abierta", LocalDate.of(2026, 12, 18), "Exposición de proyectos universitarios y empresas"));
+        eventService.save(new Event(null, "Data Science & AI Summit", LocalDate.of(2027, 1, 15), "Tendencias en modelos de lenguaje y pipelines de datos"));
+        eventService.save(new Event(null, "Seminario de Diseño de APIs RESTful", LocalDate.of(2027, 1, 25), "Buenas prácticas, estándares y documentación OpenAPI"));
+        eventService.save(new Event(null, "Encuentro de Comunidades Open Source", LocalDate.of(2027, 2, 8), "Mesa redonda sobre contribución y licencias libres"));
+        eventService.save(new Event(null, "Simposio de Bases de Datos Distribuidas", LocalDate.of(2027, 2, 19), "Optimización SQL, replicación y almacenamiento NoSQL"));
+        eventService.save(new Event(null, "Congreso de Transformación Ágil", LocalDate.of(2027, 3, 5), "Marcos Scrum, Kanban y dinámicas de equipo ágil"));
+        eventService.save(new Event(null, "Taller de UI/UX para Desarrolladores", LocalDate.of(2027, 3, 16), "Principios de usabilidad y diseño de interfaces accesibles"));
+        eventService.save(new Event(null, "Gala Anual de la Industria de Software", LocalDate.of(2027, 3, 27), "Cierre de año y premiación a desarrollos destacados"));
+
+        return true;
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/controller/EventController.java">
+package com.springboot.eventify.controller;
+
+import com.springboot.eventify.model.Event;
+import com.springboot.eventify.service.EventService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/events")
+@Tag(name = "Eventos", description = "Operaciones para registrar, consultar, actualizar y eliminar eventos")
+public class EventController{
+
+    private final EventService eventService;
+
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registrar un nuevo evento", description = "Valida y almacena un evento en la DB")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Evento creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public Event create(@RequestBody Event event){
+        return eventService.save(event);
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar eventos de forma paginada")
+    @ApiResponse(responseCode = "200", description = "Listado paginado de eventos")
+    public Page<Event> getAll(@ParameterObject @PageableDefault(size = 10)Pageable pageable) {
+        return eventService.findAll(pageable);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Consultar un evento por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Evento encontrado"),
+            @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
+    public Event getById(@Parameter(description = "ID del evento a consultar") @PathVariable Long id) {
+        return eventService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un evento existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Evento actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
+    public Event update(@PathVariable Long id, @RequestBody Event event) {
+        return eventService.update(id, event);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Eliminar un evento")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Evento eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+    })
+    public void delete(@PathVariable Long id) {
+        eventService.delete(id);
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/controller/EventViewController.java">
+package com.springboot.eventify.controller;
+
+import com.springboot.eventify.exception.InvalidDataException;
+import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.model.Event;
+import com.springboot.eventify.service.EventService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin/events")
+public class EventViewController {
+
+    private final EventService eventService;
+
+    public EventViewController(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    @GetMapping
+    public String listar(@PageableDefault(size = 10)Pageable pageable, Model model){
+        Page<Event> pagina = eventService.findAll(pageable);
+        model.addAttribute("eventos", pagina.getContent());
+        model.addAttribute("pagina", pagina);
+        return "events/list";
+    }
+
+    // Buscar por ID
+    @GetMapping("/{id}")
+    public String verDetalle(@PathVariable Long id, Model model) {
+        model.addAttribute("event", eventService.findById(id));
+        return "events/detail";
+    }
+
+    @GetMapping("/new")
+    public String mostrarFormulario(Model model){
+        model.addAttribute("event", new Event());
+        return "events/form";
+    }
+
+    @PostMapping
+    public String guardar(@Valid @ModelAttribute("event") Event event, BindingResult result, RedirectAttributes redirectAttributes){
+        // No redirigimos: volvemos a mostrar el mismo formulario con los
+        // datos ya escritos por el usuario y los mensajes de error de
+        // Bean Validation (@NotBlank, @Size, @NotNull en la entidad Event).
+        if(result.hasErrors()){
+            return "events/form";
+        }
+        eventService.save(event);
+        redirectAttributes.addFlashAttribute("mensaje", "Evento creado exitosamente");
+        return  "redirect:/admin/events";
+    }
+
+    // UPDATE — formulario precargado
+    @GetMapping("/{id}/edit")
+    public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
+        model.addAttribute("event", eventService.findById(id));
+        return "events/form";
+    }
+
+    // UPDATE — procesar
+    @PostMapping("/{id}/edit")
+    public String actualizar(@PathVariable Long id, @Valid @ModelAttribute("event") Event event, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "events/form";
+        }
+        eventService.update(id, event);
+        redirectAttributes.addFlashAttribute("mensaje", "Evento actualizado exitosamente");
+        return "redirect:/admin/events";
+    }
+
+    // DELETE
+    @PostMapping("/{id}/delete")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        eventService.delete(id);
+        redirectAttributes.addFlashAttribute("mensaje", "Evento eliminado exitosamente");
+        return "redirect:/admin/events";
+    }
+
+    // Manejo de errores de negocio propio de la vista: NO se delega al
+    // GlobalExceptionHandler de la API (ver Paso 6), porque esa clase
+    // responde JSON y aquí el cliente es un navegador esperando HTML.
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public String manejarNoEncontrado(ResourceNotFoundException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/admin/events";
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public String manejarDatoInvalido(InvalidDataException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/admin/events";
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/controller/VenueController.java">
+package com.springboot.eventify.controller;
+
+import com.springboot.eventify.model.Venue;
+import com.springboot.eventify.service.VenueService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/venues")
+@Tag(name = "Lugares",description = "Operaciones para registrar, consultar, actualizar y eliminar lugares(venues)")
+public class VenueController {
+
+    private final VenueService venueService;
+
+    public VenueController(VenueService venueService) {
+        this.venueService = venueService;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registrar un nuevo lugar", description = "Valida y almacena un lugar en la base de datos")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Lugar creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos (por ejemplo, nombre vacío)")
+    })
+    public Venue create(@RequestBody Venue venue) {
+        return venueService.save(venue);
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar lugares de forma paginada", description = "Soporta los parámetros 'page', 'size' y 'sort' (ej: ?page=0&size=10&sort=nombre,asc)")
+    @ApiResponse(responseCode = "200", description = "Listado paginado de lugares")
+    public Page<Venue> getAll(@ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return venueService.findAll(pageable);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Consultar un lugar por ID", description = "Retorna 404 Not Found si el lugar no existe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lugar encontrado"),
+            @ApiResponse(responseCode = "404", description = "Lugar no encontrado")
+    })
+    public Venue getById(@Parameter(description = "ID del lugar a consultar") @PathVariable Long id) {
+        return venueService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un lugar existente", description = "Valida que el lugar exista antes de actualizar; retorna 404 Not Found si no existe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lugar actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "404", description = "Lugar no encontrado")
+    })
+    public Venue update(@PathVariable Long id, @RequestBody Venue venue) {
+        return venueService.update(id, venue);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Eliminar un lugar", description = "Elimina el registro de forma definitiva; retorna 404 Not Found si el ID no existe")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Lugar eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Lugar no encontrado")
+    })
+    public void delete(@PathVariable Long id) {
+        venueService.delete(id);
+    }
+
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/controller/VenueViewController.java">
+package com.springboot.eventify.controller;
+
+import com.springboot.eventify.exception.InvalidDataException;
+import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.model.Venue;
+import com.springboot.eventify.service.VenueService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin/venues")
+public class VenueViewController {
+
+    private final VenueService venueService;
+
+    public VenueViewController(VenueService venueService) {
+        this.venueService = venueService;
+    }
+
+    @GetMapping
+    public String listar(@PageableDefault(size = 10) Pageable pageable, Model model){
+        Page<Venue> pagina = venueService.findAll(pageable);
+        model.addAttribute("lugares", pagina.getContent());
+        model.addAttribute("pagina", pagina);
+        return "venues/list";
+    }
+
+    @GetMapping("/{id}")
+    public String verDetalle(@PathVariable Long id, Model model) {
+        model.addAttribute("venue", venueService.findById(id));
+        return "venues/detail";
+    }
+
+    @GetMapping("/new")
+    public String mostrarFormulario(Model model){
+        model.addAttribute("venue", new Venue());
+        return "venues/form";
+    }
+
+    @PostMapping
+    public String guardar(@Valid @ModelAttribute("venue") Venue venue, BindingResult result, RedirectAttributes redirectAttributes){
+        if(result.hasErrors()){
+            return "venues/form";
+        }
+        venueService.save(venue);
+        redirectAttributes.addFlashAttribute("mensaje", "Lugar creado exitosamente");
+        return  "redirect:/admin/venues";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
+        model.addAttribute("venue", venueService.findById(id));
+        return "venues/form";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        venueService.delete(id);
+        redirectAttributes.addFlashAttribute("mensaje", "Lugar eliminado exitosamente");
+        return "redirect:/admin/venues";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String actualizar(@PathVariable Long id,
+                             @Valid @ModelAttribute("venue") Venue venue,
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "venues/form";
+        }
+        venueService.update(id, venue);
+        redirectAttributes.addFlashAttribute("mensaje", "Lugar actualizado exitosamente");
+        return "redirect:/admin/venues";
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public String manejarNoEncontrado(ResourceNotFoundException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/admin/venues";
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public String manejarDatoInvalido(InvalidDataException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/admin/venues";
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/exception/GlobalExceptionHandler.java">
+package com.springboot.eventify.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+
+@RestControllerAdvice(annotations = RestController.class)
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidData(InvalidDataException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/exception/InvalidDataException.java">
+package com.springboot.eventify.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+
+public class InvalidDataException extends RuntimeException{
+    public InvalidDataException(String mensaje){
+        super(mensaje);
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/exception/ResourceNotFoundException.java">
+package com.springboot.eventify.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+
+public class ResourceNotFoundException extends RuntimeException{
+    public  ResourceNotFoundException(String mensaje){
+        super(mensaje);
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/model/Event.java">
+package com.springboot.eventify.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "events")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class Event {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @io.swagger.v3.oas.annotations.media.Schema(accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY)
+    private Long id;
+
+    @NotBlank(message = "El nombre del evento no puede estar vacío")
+    @Size(max = 150, message = "El nombre no puede superar los 150 caracteres")
+    @Column(nullable = false, length = 150)
+    private String nombre;
+
+    @NotNull(message = "La fecha del evento es obligatoria")
+    @Column(nullable = false)
+    private LocalDate fecha;
+
+    @Size(max = 500, message = "La descripción no puede superar los 500 caracteres")
+    @Column(length = 500)
+    private String descripcion;
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/model/Venue.java">
+package com.springboot.eventify.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "venues")
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class Venue {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @io.swagger.v3.oas.annotations.media.Schema(accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY)
+    private Long id;
+
+    @NotBlank(message = "El nombre del lugar no puede estar vacío")
+    @Size(max = 150, message = "El nombre no puede superar los 150 caracteres")
+    @Column(nullable = false, length = 150)
+    private String nombre;
+
+    @NotBlank(message = "La dirección no puede estar vacía")
+    @Size(max = 250, message = "La dirección no puede superar los 250 caracteres")
+    @Column(nullable = false, length = 250)
+    private String direccion;
+
+    @NotNull(message = "La capacidad es obligatoria")
+    @Min(value = 1, message = "La capacidad debe ser al menos 1")
+    @Column(nullable = false)
+    private Integer capacidad;
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/repository/EventRepository.java">
+package com.springboot.eventify.repository;
+
+import com.springboot.eventify.model.Event;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EventRepository extends JpaRepository<Event, Long> {
+
+    // Consulta derivada
+    Page<Event> findByNombreContaining(String nombre, Pageable pageable);
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/repository/VenueRepository.java">
+package com.springboot.eventify.repository;
+
+import com.springboot.eventify.model.Venue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface VenueRepository extends JpaRepository<Venue, Long> {
+
+    // Consulta derivada
+    Page<Venue> findByNombreContaining(String nombre, Pageable pageable);
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/service/EventService.java">
+package com.springboot.eventify.service;
+
+import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.exception.InvalidDataException;
+import com.springboot.eventify.repository.EventRepository;
+import com.springboot.eventify.model.Event;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EventService {
+    private final EventRepository eventRepository;
+
+    public EventService(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
+
+    public Event save(Event event){
+        event.setId(null);
+        validar(event);
+        return eventRepository.save(event);
+    }
+
+    public Page<Event> findAll(Pageable pageable){
+        return eventRepository.findAll(pageable);
+    }
+
+    public Event findById(Long id){
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + id));
+    }
+
+    public Event update(Long id, Event datosActualizados) {
+        Event eventoExistente = findById(id);
+        validar(datosActualizados);
+
+        eventoExistente.setNombre(datosActualizados.getNombre());
+        eventoExistente.setFecha(datosActualizados.getFecha());
+        eventoExistente.setDescripcion(datosActualizados.getDescripcion());
+
+        return eventRepository.save(eventoExistente);
+    }
+
+    public void delete(Long id) {
+        Event evento = findById(id);
+        eventRepository.delete(evento);
+    }
+
+    private void validar(Event event){
+        if(event.getNombre() == null || event.getNombre().trim().isEmpty()){
+            throw new InvalidDataException("El nombre del evento no puede estar vacío");
+        }
+        if(event.getFecha() == null){
+            throw new InvalidDataException("La fecha del evento no puede ir vacía");
+        }
+        if(event.getDescripcion() == null || event.getDescripcion().trim().isEmpty()){
+            throw new InvalidDataException("La descripcion del evento no puede estar vacía");
+        }
+    }
+
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/service/VenueService.java">
+package com.springboot.eventify.service;
+
+import com.springboot.eventify.exception.InvalidDataException;
+import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.repository.VenueRepository;
+import com.springboot.eventify.model.Venue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class VenueService {
+
+    private final VenueRepository venueRepository;
+
+    public VenueService(VenueRepository venueRepository) {
+        this.venueRepository = venueRepository;
+    }
+
+    public Venue save(Venue venue){
+        venue.setId(null);
+        validar(venue);
+        return venueRepository.save(venue);
+    }
+
+    public Page<Venue> findAll(Pageable pageable){
+        return venueRepository.findAll(pageable);
+    }
+
+    public Venue findById(Long id){
+        return venueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lugar no encontrado con id: " + id));
+
+    }
+
+    public Venue update(Long id, Venue datosActualizados) {
+        Venue venueExistente = findById(id);
+        validar(datosActualizados);
+
+        venueExistente.setNombre(datosActualizados.getNombre());
+        venueExistente.setDireccion(datosActualizados.getDireccion());
+        venueExistente.setCapacidad(datosActualizados.getCapacidad());
+
+        return venueRepository.save(venueExistente);
+    }
+
+    public void delete(Long id) {
+        Venue venue = findById(id);
+        venueRepository.delete(venue);
+    }
+
+    private void validar(Venue venue) {
+        if (venue.getNombre() == null || venue.getNombre().trim().isEmpty()) {
+            throw new InvalidDataException("El nombre del lugar no puede estar vacío");
+        }
+        if (venue.getDireccion() == null || venue.getDireccion().trim().isEmpty()){
+            throw new InvalidDataException("La dirección del lugar no puede ir vacía");
+        }
+        if (venue.getCapacidad() == null || venue.getCapacidad() <= 0){
+            throw new InvalidDataException("La capacidad debe ser un número entero mayor a 0");
+        }
+    }
+}
+</file>
+
+<file path="src/main/java/com/springboot/eventify/EventifyApplication.java">
+package com.springboot.eventify;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class EventifyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(EventifyApplication.class, args);
+    }
+
+}
+</file>
+
+<file path="src/main/resources/static/css/styles.css">
+/* src/main/resources/static/css/styles.css */
+body {
+    font-family: -apple-system, Segoe UI, sans-serif;
+    margin: 0;
+    background-color: #f7f7fa;
+    color: #222;
+}
+
+nav {
+    background-color: #1f2937;
+    padding: 1rem 2rem;
+}
+
+nav a {
+    color: white;
+    margin-right: 1.5rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th:last-child,
+td:last-child {
+    width: 220px;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    color: #555;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.error {
+    color: #b91c1c;
+    font-size: 0.875rem;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+form .field {
+    margin-bottom: 1rem;
+}
+
+form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+}
+
+td a {
+    margin-right: 0.5rem;
+}
+
+td form {
+    display: inline;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination a {
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #2563eb;
+}
+
+.pagination a.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 0.15rem 0.25rem 0.15rem 0;
+    white-space: nowrap;
+}
+
+.btn-view {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.btn-view:hover {
+    background-color: #c7d2fe;
+}
+
+.btn-edit {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.btn-edit:hover {
+    background-color: #fde68a;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+}
+</file>
+
+<file path="src/main/resources/templates/events/detail.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Detalle del evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${event.nombre}">Nombre del evento</h1>
+
+    <table>
+        <tr><th>ID</th><td th:text="${event.id}">1</td></tr>
+        <tr><th>Nombre</th><td th:text="${event.nombre}">Nombre</td></tr>
+        <tr><th>Fecha</th><td th:text="${event.fecha}">2026-01-01</td></tr>
+        <tr><th>Descripción</th><td th:text="${event.descripcion}">Descripción</td></tr>
+    </table>
+
+    <p>
+        <a class="btn" th:href="@{/admin/events/{id}/edit(id=${event.id})}">Editar</a>
+        <a class="btn btn-secondary" th:href="@{/admin/events}">Volver al listado</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/events/form.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Evento</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${event.id == null} ? 'Registrar nuevo evento' : 'Editar evento'">Evento</h1>
+
+    <form th:action="${event.id == null} ? @{/admin/events} : @{/admin/events/__${event.id}__/edit}"
+          th:object="${event}" method="post">
+
+        <input type="hidden" th:if="${event.id != null}" th:field="*{id}"/>
+
+        <div class="field">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" th:field="*{nombre}"/>
+            <p class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" th:field="*{fecha}"/>
+            <p class="error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" rows="4"></textarea>
+            <p class="error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">Error</p>
+        </div>
+
+        <button type="submit" class="btn" th:text="${event.id == null} ? 'Guardar' : 'Actualizar'">Guardar</button>
+        <a th:href="@{/admin/events}">Cancelar</a>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/events/list.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Eventos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1>Catálogo de eventos</h1>
+
+    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+
+    <p><a class="btn" th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
+
+    <div class="empty-state" th:unless="${!eventos.isEmpty()}">
+        <p>Actualmente no hay eventos programados.</p>
+    </div>
+
+    <table th:if="${!eventos.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="evento : ${eventos}">
+            <td th:text="${evento.id}">1</td>
+            <td th:text="${evento.nombre}">Nombre de ejemplo</td>
+            <td th:text="${evento.fecha}">2026-01-01</td>
+            <td th:text="${evento.descripcion}">Descripción</td>
+            <td>
+                <div style="display:flex; flex-wrap:wrap; gap:0.25rem;">
+                    <a class="btn btn-view" th:href="@{/admin/events/{id}(id=${evento.id})}">Ver</a>
+                    <a class="btn btn-edit" th:href="@{/admin/events/{id}/edit(id=${evento.id})}">Editar</a>
+                    <form th:action="@{/admin/events/{id}/delete(id=${evento.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este evento?');" style="display:inline;">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Navegación entre páginas -->
+    <div class="pagination" th:if="${pagina.totalPages > 1}">
+        <a th:if="${pagina.hasPrevious()}"
+           th:href="@{/admin/events(page=${pagina.number - 1}, size=${pagina.size})}">&laquo; Anterior</a>
+
+        <a th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+           th:href="@{/admin/events(page=${i}, size=${pagina.size})}"
+           th:text="${i + 1}"
+           th:classappend="${i == pagina.number} ? 'active'">1</a>
+
+        <a th:if="${pagina.hasNext()}"
+           th:href="@{/admin/events(page=${pagina.number + 1}, size=${pagina.size})}">Siguiente &raquo;</a>
+    </div>
+
+    <p th:if="${pagina != null}">
+        Página <span th:text="${pagina.number + 1}">1</span> de
+        <span th:text="${pagina.totalPages}">1</span>
+        (<span th:text="${pagina.totalElements}">0</span> eventos en total)
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/fragments/error.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Ocurrió un error</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+<main>
+    <h1>Algo salió mal</h1>
+    <p>No pudimos completar tu solicitud. Intenta de nuevo o vuelve al panel principal.</p>
+    <a class="btn" th:href="@{/admin/events}">Volver al panel</a>
+</main>
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/fragments/layout.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Este <head> nunca se renderiza directamente: solo sirve de "contenedor"
+         para declarar los fragmentos reutilizables. -->
+    <meta charset="UTF-8"/>
+    <title>Fragmentos</title>
+</head>
+<body>
+
+<nav th:fragment="nav">
+    <a th:href="@{/admin/events}">Eventos</a>
+    <a th:href="@{/admin/venues}">Lugares</a>
+</nav>
+
+<footer th:fragment="footer">
+    <p style="text-align:center; color:#888; padding:1rem;">Eventify — Panel administrativo</p>
+</footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/venues/detail.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Detalle del lugar</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${venue.nombre}">Nombre del lugar</h1>
+
+    <table>
+        <tr><th>ID</th><td th:text="${venue.id}">1</td></tr>
+        <tr><th>Nombre</th><td th:text="${venue.nombre}">Nombre</td></tr>
+        <tr><th>Dirección</th><td th:text="${venue.direccion}">Dirección</td></tr>
+        <tr><th>Capacidad</th><td th:text="${venue.capacidad}">0</td></tr>
+    </table>
+
+    <p>
+        <a class="btn" th:href="@{/admin/venues/{id}/edit(id=${venue.id})}">Editar</a>
+        <a class="btn btn-secondary" th:href="@{/admin/venues}">Volver al listado</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/venues/form.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Lugar</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1 th:text="${venue.id == null} ? 'Registrar nuevo lugar' : 'Editar lugar'">Lugar</h1>
+
+    <form th:action="${venue.id == null} ? @{/admin/venues} : @{/admin/venues/__${venue.id}__/edit}"
+          th:object="${venue}" method="post">
+
+        <input type="hidden" th:if="${venue.id != null}" th:field="*{id}"/>
+
+        <div class="field">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" th:field="*{nombre}"/>
+            <p class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" th:field="*{direccion}"/>
+            <p class="error" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}">Error</p>
+        </div>
+
+        <div class="field">
+            <label for="capacidad">Capacidad</label>
+            <input type="number" id="capacidad" th:field="*{capacidad}"/>
+            <p class="error" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}">Error</p>
+        </div>
+
+        <button type="submit" class="btn" th:text="${venue.id == null} ? 'Guardar' : 'Actualizar'">Guardar</button>
+        <a th:href="@{/admin/venues}">Cancelar</a>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/templates/venues/list.html">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Lugares</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1>Catálogo de lugares</h1>
+
+    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+
+    <p><a class="btn" th:href="@{/admin/venues/new}">+ Nuevo lugar</a></p>
+
+    <div class="empty-state" th:unless="${!lugares.isEmpty()}">
+        <p>Actualmente no hay lugares registrados.</p>
+    </div>
+
+    <table th:if="${!lugares.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Capacidad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lugar : ${lugares}">
+            <td th:text="${lugar.id}">1</td>
+            <td th:text="${lugar.nombre}">Nombre</td>
+            <td th:text="${lugar.direccion}">Dirección</td>
+            <td th:text="${lugar.capacidad}">0</td>
+            <td>
+                <div style="display:flex; flex-wrap:wrap; gap:0.25rem;">
+                    <a class="btn btn-view" th:href="@{/admin/venues/{id}(id=${lugar.id})}">Ver</a>
+                    <a class="btn btn-edit" th:href="@{/admin/venues/{id}/edit(id=${lugar.id})}">Editar</a>
+                    <form th:action="@{/admin/venues/{id}/delete(id=${lugar.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este lugar?');" style="display:inline;">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" th:if="${pagina.totalPages > 1}">
+        <a th:if="${pagina.hasPrevious()}"
+           th:href="@{/admin/venues(page=${pagina.number - 1}, size=${pagina.size})}">&laquo; Anterior</a>
+
+        <a th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+           th:href="@{/admin/venues(page=${i}, size=${pagina.size})}"
+           th:text="${i + 1}"
+           th:classappend="${i == pagina.number} ? 'active'">1</a>
+
+        <a th:if="${pagina.hasNext()}"
+           th:href="@{/admin/venues(page=${pagina.number + 1}, size=${pagina.size})}">Siguiente &raquo;</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/resources/application.properties">
+spring.application.name=eventify
+
+# Conexión a la base de datos PostgreSQL real
+spring.datasource.url=jdbc:postgresql://localhost:5433/eventify
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username=eventify
+spring.datasource.password=eventify
+
+# Hibernate crea o actualiza las tablas automáticamente según las entidades
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Swagger solo documenta la API; las rutas /admin/** son la interfaz web
+# y no son parte del contrato de la API.
+springdoc.paths-to-match=/api/**
+</file>
+
+<file path="src/test/java/com/springboot/eventify/repository/EventRepositoryTest.java">
+package com.springboot.eventify.repository;
+
+import com.springboot.eventify.model.Event;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+class EventRepositoryTest {
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Test
+    void save_PersistsEventWithGeneratedId() {
+        // Arrange
+        Event event = new Event(null, "Charla de Arquitectura", LocalDate.of(2026, 12, 1), "Sesión técnica sobre diseño de software");
+
+        // Act
+        Event saved = eventRepository.save(event);
+
+        // Assert
+        assertNotNull(saved.getId());
+        assertEquals("Charla de Arquitectura", saved.getNombre());
+    }
+
+    @Test
+    void findByNombreContaining_ReturnsOnlyMatchingEvents() {
+        // Arrange
+        eventRepository.save(new Event(null, "Conferencia Java", LocalDate.of(2026, 10, 10), "Desc"));
+        eventRepository.save(new Event(null, "Workshop Java Avanzado", LocalDate.of(2026, 10, 15), "Desc"));
+        eventRepository.save(new Event(null, "Taller de Python", LocalDate.of(2026, 10, 20), "Desc"));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Act
+        Page<Event> resultado = eventRepository.findByNombreContaining("Java", pageable);
+
+        // Assert
+        assertEquals(2, resultado.getTotalElements());
+    }
+
+    @Test
+    void deleteById_RemovesEventFromDatabase() {
+        // Arrange
+        Event saved = eventRepository.save(new Event(null, "Evento temporal", LocalDate.of(2026, 9, 1), "Desc"));        Long id = saved.getId();
+
+        // Act
+        eventRepository.deleteById(id);
+
+        // Assert
+        assertTrue(eventRepository.findById(id).isEmpty());
+    }
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/repository/VenueRepositoryTest.java">
+package com.springboot.eventify.repository;
+
+import com.springboot.eventify.model.Venue;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+class VenueRepositoryTest {
+
+    @Autowired
+    private VenueRepository venueRepository;
+
+    @Test
+    void save_PersistsVenueWithGeneratedId() {
+        // Arrange
+        Venue venue = new Venue(null, "Sala Norte", "Carrera 10 #20-30", 80);
+
+        // Act
+        Venue saved = venueRepository.save(venue);
+
+        // Assert
+        assertNotNull(saved.getId());
+        assertEquals(80, saved.getCapacidad());
+    }
+
+    @Test
+    void findByNombreContaining_ReturnsMatchingVenues() {
+        // Arrange
+        venueRepository.save(new Venue(null, "Auditorio Central", "Dir 1", 200));
+        venueRepository.save(new Venue(null, "Auditorio Norte", "Dir 2", 100));
+        venueRepository.save(new Venue(null, "Salón Sur", "Dir 3", 50));
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Act
+        Page<Venue> resultado = venueRepository.findByNombreContaining("Auditorio", pageable);
+
+        // Assert
+        assertEquals(2, resultado.getTotalElements());
+    }
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/service/EventServiceTest.java">
+package com.springboot.eventify.service;
+
+import com.springboot.eventify.exception.InvalidDataException;
+import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.model.Event;
+import com.springboot.eventify.repository.EventRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class EventServiceTest {
+
+    @Mock
+    private EventRepository eventRepository;
+
+    @InjectMocks
+    private EventService eventService;
+
+    private Event validEvent;
+
+    @BeforeEach
+    void setUp() {
+        validEvent = new Event(null, "Conferencia Java", LocalDate.of(2026, 10, 10), "Charla técnica de backend");
+    }
+
+    @Test
+    void save_ValidEvent_ReturnsSavedEvent() {
+        // Arrange (Preparar)
+        Event savedMock = new Event(1L, "Conferencia Java", LocalDate.of(2026, 10, 10), "Charla técnica de backend");
+        when(eventRepository.save(validEvent)).thenReturn(savedMock);
+
+        // Act (Actuar)
+        Event result = eventService.save(validEvent);
+
+        // Assert (Verificar)
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Conferencia Java", result.getNombre());
+        verify(eventRepository, times(1)).save(validEvent);
+    }
+
+    @Test
+    void save_EmptyName_ThrowsInvalidDataException() {
+        // Arrange (Preparar)
+        Event invalidEvent = new Event(null, "   ", LocalDate.of(2026, 10, 10), "Descripción");
+
+        // Act & Assert (Actuar y Verificar)
+        assertThrows(InvalidDataException.class, () -> eventService.save(invalidEvent));
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    void save_NullName_ThrowsInvalidDataException() {
+        // Arrange (Preparar)
+        Event invalidEvent = new Event(null, null, LocalDate.of(2026, 10, 10), "Descripción");
+
+        // Act & Assert (Actuar y Verificar)
+        assertThrows(InvalidDataException.class, () -> eventService.save(invalidEvent));
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    void findAll_ReturnsPageOfEvents() {
+        // Arrange (Preparar)
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Event> mockList = new ArrayList<>();
+        mockList.add(new Event(1L, "Evento 1", LocalDate.of(2026, 10, 10), "Desc 1"));
+        Page<Event> mockPage = new PageImpl<>(mockList, pageable, 1);
+        when(eventRepository.findAll(pageable)).thenReturn(mockPage);
+
+        // Act (Actuar)
+        Page<Event> result = eventService.findAll(pageable);
+
+        // Assert (Verificar)
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(eventRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    void findById_ExistingId_ReturnsEvent() {
+        // Arrange
+        Event event = new Event(1L, "Conferencia Java", LocalDate.of(2026, 10, 10), "Desc");        when(eventRepository.findById(1L)).thenReturn(java.util.Optional.of(event));
+
+        // Act
+        Event result = eventService.findById(1L);
+
+        // Assert
+        assertEquals("Conferencia Java", result.getNombre());
+    }
+
+    @Test
+    void findById_NonExistingId_ThrowsResourceNotFoundException() {
+        // Arrange
+        when(eventRepository.findById(99L)).thenReturn(java.util.Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> eventService.findById(99L));
+    }
+
+    @Test
+    void delete_NonExistingId_ThrowsResourceNotFoundException() {
+        // Arrange
+        when(eventRepository.findById(99L)).thenReturn(java.util.Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> eventService.delete(99L));
+        verify(eventRepository, never()).delete(any());
+    }
+
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/service/VenueServiceTest.java">
+package com.springboot.eventify.service;
+
+import com.springboot.eventify.model.Venue;
+import com.springboot.eventify.repository.VenueRepository;
+import com.springboot.eventify.exception.InvalidDataException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class VenueServiceTest {
+
+    @Mock
+    private VenueRepository venueRepository;
+
+    @InjectMocks
+    private VenueService venueService;
+
+    private Venue validVenue;
+
+    @BeforeEach
+    void setUp() {
+        validVenue = new Venue(null, "Auditorio Principal", "Calle 50 #20-10", 300);
+    }
+
+    @Test
+    void save_ValidVenue_ReturnsSavedVenue() {
+        // Arrange (Preparar)
+        Venue savedMock = new Venue(1L, "Auditorio Principal", "Calle 50 #20-10", 300);
+        when(venueRepository.save(validVenue)).thenReturn(savedMock);
+
+        // Act (Actuar)
+        Venue result = venueService.save(validVenue);
+
+        // Assert (Verificar)
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Auditorio Principal", result.getNombre());
+        verify(venueRepository, times(1)).save(validVenue);
+    }
+
+    @Test
+    void save_EmptyName_ThrowsInvalidDataException() {
+        // Arrange (Preparar)
+        Venue invalidVenue = new Venue(null, "", "Calle 50 #20-10", 300);
+
+        // Act & Assert (Actuar y Verificar)
+        assertThrows(InvalidDataException.class, () -> venueService.save(invalidVenue));
+        verify(venueRepository, never()).save(any());
+    }
+
+    @Test
+    void findAll_ReturnsPageOfVenues() {
+        // Arrange (Preparar)
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Venue> mockList = new ArrayList<>();
+        mockList.add(new Venue(1L, "Lugar A", "Dirección A", 100));
+        Page<Venue> mockPage = new PageImpl<>(mockList, pageable, 1);
+        when(venueRepository.findAll(pageable)).thenReturn(mockPage);
+
+        // Act (Actuar)
+        Page<Venue> result = venueService.findAll(pageable);
+
+        // Assert (Verificar)
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(venueRepository, times(1)).findAll(pageable);
+    }
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/web/EventViewControllerTest.java">
+package com.springboot.eventify.web;
+
+import com.springboot.eventify.model.Event;
+import com.springboot.eventify.repository.EventRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class EventViewControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @BeforeEach
+    void limpiarBaseDePrueba() {
+        eventRepository.deleteAll();
+    }
+
+    // Escenario 4: el Model contiene la lista de eventos necesaria para la vista
+    // Escenario 1: hay eventos -> se renderiza la tabla
+    @Test
+    void listar_ConEventos_Retorna200VistaCorrectaYModeloConDatos() throws Exception {
+        eventRepository.save(new Event(null, "Conferencia Java", LocalDate.now().plusDays(5), "desc"));
+        eventRepository.save(new Event(null, "Workshop Spring", LocalDate.now().plusDays(10), "desc"));
+
+        mockMvc.perform(get("/admin/events"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("events/list"))
+                .andExpect(model().attributeExists("eventos"))
+                .andExpect(model().attribute("eventos", hasSize(2)));
+    }
+
+    // Escenario 2: catálogo vacío -> mensaje amigable, no una tabla vacía muda
+    @Test
+    void listar_SinEventos_MuestraMensajeDeCatalogoVacio() throws Exception {
+        mockMvc.perform(get("/admin/events"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("events/list"))
+                .andExpect(model().attribute("eventos", hasSize(0)))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("Actualmente no hay eventos programados")));
+    }
+
+    @Test
+    void mostrarFormulario_Retorna200YVistaDeFormulario() throws Exception {
+        mockMvc.perform(get("/admin/events/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("events/form"))
+                .andExpect(model().attributeExists("event"));
+    }
+
+    // Escenario 3: registro exitoso -> guarda en BD y redirige (no renderiza directo)
+    @Test
+    void guardar_DatosValidos_GuardaYRedirigeAlListado() throws Exception {
+        mockMvc.perform(post("/admin/events")
+                        .param("nombre", "Charla de Arquitectura")
+                        .param("fecha", LocalDate.now().plusDays(3).toString())
+                        .param("descripcion", "Sesión técnica"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/events"))
+                .andExpect(flash().attributeExists("mensaje"));
+
+        assertEquals(1, eventRepository.count());
+    }
+
+    // Datos inválidos -> NO redirige; vuelve a mostrar el formulario con errores
+    @Test
+    void guardar_NombreVacio_ReRenderizaFormularioConErrores() throws Exception {
+        mockMvc.perform(post("/admin/events")
+                        .param("nombre", "")
+                        .param("fecha", LocalDate.now().plusDays(3).toString())
+                        .param("descripcion", "desc"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("events/form"))
+                .andExpect(model().attributeHasFieldErrors("event", "nombre"));
+
+        assertEquals(0, eventRepository.count());
+    }
+
+    private void assertEquals(long esperado, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(esperado, actual);
+    }
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/web/VenueViewControllerTest.java">
+package com.springboot.eventify.web;
+
+import com.springboot.eventify.model.Venue;
+import com.springboot.eventify.repository.VenueRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class VenueViewControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private VenueRepository venueRepository;
+
+    @BeforeEach
+    void limpiarBaseDePrueba() {
+        venueRepository.deleteAll();
+    }
+
+    // Escenario 4: el Model contiene la lista de lugares necesaria para la vista
+    // Escenario 1: hay lugares -> se renderiza la tabla
+    @Test
+    void listar_ConLugares_Retorna200VistaCorrectaYModeloConDatos() throws Exception {
+        venueRepository.save(new Venue(null, "Auditorio Central", "Calle 10 #20-30", 200));
+        venueRepository.save(new Venue(null, "Sala Norte", "Carrera 5 #15-40", 80));
+
+        mockMvc.perform(get("/admin/venues"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/list"))
+                .andExpect(model().attributeExists("lugares"))
+                .andExpect(model().attribute("lugares", hasSize(2)));
+    }
+
+    // Escenario 2: catálogo vacío -> mensaje amigable, no una tabla vacía muda
+    @Test
+    void listar_SinLugares_MuestraMensajeDeCatalogoVacio() throws Exception {
+        mockMvc.perform(get("/admin/venues"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/list"))
+                .andExpect(model().attribute("lugares", hasSize(0)))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("Actualmente no hay lugares registrados")));
+    }
+
+    @Test
+    void mostrarFormulario_Retorna200YVistaDeFormulario() throws Exception {
+        mockMvc.perform(get("/admin/venues/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/form"))
+                .andExpect(model().attributeExists("venue"));
+    }
+
+    // Escenario 3: registro exitoso -> guarda en BD y redirige (no renderiza directo)
+    @Test
+    void guardar_DatosValidos_GuardaYRedirigeAlListado() throws Exception {
+        mockMvc.perform(post("/admin/venues")
+                        .param("nombre", "Centro de Eventos Sur")
+                        .param("direccion", "Av. Siempre Viva 742")
+                        .param("capacidad", "150"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/venues"))
+                .andExpect(flash().attributeExists("mensaje"));
+
+        assertEquals(1, venueRepository.count());
+    }
+
+    // Datos inválidos -> NO redirige; vuelve a mostrar el formulario con errores
+    @Test
+    void guardar_NombreVacio_ReRenderizaFormularioConErrores() throws Exception {
+        mockMvc.perform(post("/admin/venues")
+                        .param("nombre", "")
+                        .param("direccion", "Av. Siempre Viva 742")
+                        .param("capacidad", "150"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/form"))
+                .andExpect(model().attributeHasFieldErrors("venue", "nombre"));
+
+        assertEquals(0, venueRepository.count());
+    }
+
+    private void assertEquals(long esperado, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(esperado, actual);
+    }
+}
+</file>
+
+<file path="src/test/java/com/springboot/eventify/EventifyApplicationTests.java">
+package com.springboot.eventify;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class EventifyApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
+</file>
+
+<file path="src/test/resources/application.properties">
+# Conexión a la base de datos PostgreSQL de pruebas (usada por @DataJpaTest)
+spring.datasource.url=jdbc:postgresql://localhost:5433/eventify_test
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username=eventify
+spring.datasource.password=eventify
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=true
+</file>
+
+<file path=".gitattributes">
+/mvnw text eol=lf
+*.cmd text eol=crlf
+</file>
+
+<file path=".gitignore">
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+mvnw
+mvnw.cmd
+.mvn
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+</file>
+
+<file path="pom.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.springboot</groupId>
+    <artifactId>eventify</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>eventify</name>
+    <description>eventify</description>
+    <url/>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer/>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+</file>
+
+<file path="README.md">
+# Eventify Semana 3
+</file>
+
+</files>

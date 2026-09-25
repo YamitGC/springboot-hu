@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -19,7 +21,7 @@ class EventRepositoryTest {
     @Test
     void save_PersistsEventWithGeneratedId() {
         // Arrange
-        Event event = new Event(null, "Charla de Arquitectura", "2026-12-01", "Sesión técnica sobre diseño de software");
+        Event event = new Event(null, "Charla de Arquitectura", LocalDate.of(2026, 12, 1), "Sesión técnica sobre diseño de software");
 
         // Act
         Event saved = eventRepository.save(event);
@@ -32,9 +34,9 @@ class EventRepositoryTest {
     @Test
     void findByNombreContaining_ReturnsOnlyMatchingEvents() {
         // Arrange
-        eventRepository.save(new Event(null, "Conferencia Java", "2026-10-10", "Desc"));
-        eventRepository.save(new Event(null, "Workshop Java Avanzado", "2026-10-15", "Desc"));
-        eventRepository.save(new Event(null, "Taller de Python", "2026-10-20", "Desc"));
+        eventRepository.save(new Event(null, "Conferencia Java", LocalDate.of(2026, 10, 10), "Desc"));
+        eventRepository.save(new Event(null, "Workshop Java Avanzado", LocalDate.of(2026, 10, 15), "Desc"));
+        eventRepository.save(new Event(null, "Taller de Python", LocalDate.of(2026, 10, 20), "Desc"));
         Pageable pageable = PageRequest.of(0, 10);
 
         // Act
@@ -47,8 +49,7 @@ class EventRepositoryTest {
     @Test
     void deleteById_RemovesEventFromDatabase() {
         // Arrange
-        Event saved = eventRepository.save(new Event(null, "Evento temporal", "2026-09-01", "Desc"));
-        Long id = saved.getId();
+        Event saved = eventRepository.save(new Event(null, "Evento temporal", LocalDate.of(2026, 9, 1), "Desc"));        Long id = saved.getId();
 
         // Act
         eventRepository.deleteById(id);

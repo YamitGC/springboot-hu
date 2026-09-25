@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Lugares</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1>Catálogo de lugares</h1>
+
+    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+
+    <p><a class="btn" th:href="@{/admin/venues/new}">+ Nuevo lugar</a></p>
+
+    <div class="empty-state" th:unless="${!lugares.isEmpty()}">
+        <p>Actualmente no hay lugares registrados.</p>
+    </div>
+
+    <table th:if="${!lugares.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Capacidad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lugar : ${lugares}">
+            <td th:text="${lugar.id}">1</td>
+            <td th:text="${lugar.nombre}">Nombre</td>
+            <td th:text="${lugar.direccion}">Dirección</td>
+            <td th:text="${lugar.capacidad}">0</td>
+            <td>
+                <div style="display:flex; flex-wrap:wrap; gap:0.25rem;">
+                    <a class="btn btn-view" th:href="@{/admin/venues/{id}(id=${lugar.id})}">Ver</a>
+                    <a class="btn btn-edit" th:href="@{/admin/venues/{id}/edit(id=${lugar.id})}">Editar</a>
+                    <form th:action="@{/admin/venues/{id}/delete(id=${lugar.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este lugar?');" style="display:inline;">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" th:if="${pagina.totalPages > 1}">
+        <a th:if="${pagina.hasPrevious()}"
+           th:href="@{/admin/venues(page=${pagina.number - 1}, size=${pagina.size})}">&laquo; Anterior</a>
+
+        <a th:each="i : ${#numbers.sequence(0, pagina.totalPages - 1)}"
+           th:href="@{/admin/venues(page=${i}, size=${pagina.size})}"
+           th:text="${i + 1}"
+           th:classappend="${i == pagina.number} ? 'active'">1</a>
+
+        <a th:if="${pagina.hasNext()}"
+           th:href="@{/admin/venues(page=${pagina.number + 1}, size=${pagina.size})}">Siguiente &raquo;</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
