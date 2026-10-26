@@ -1,85 +1,100 @@
-# Eventify Semana 3
+# Eventify Semana 4
 
-API REST desarrollada con **Spring Boot** para la gestión de **Eventos** y **Lugares (Venues)**, ahora complementada con un **panel administrativo web** construido con **Thymeleaf**. Permite crear, consultar, actualizar y eliminar eventos y los espacios donde se realizan, tanto desde la API REST como desde una interfaz web, incluyendo paginación, validaciones de negocio (Bean Validation) y manejo centralizado de errores.
+API REST desarrollada con **Spring Boot** para la gestión integral de **Eventos**, **Lugares (Venues)** y **Categorías**, complementada con un **panel administrativo web** construido con **Thymeleaf**. 
+
+En esta cuarta entrega el proyecto evoluciona hacia un **modelo relacional avanzado**, incorporando relaciones **Many-to-One** y **Many-to-Many**, control de versiones y migraciones de base de datos con **Flyway**, arquitectura desacoplada mediante **DTOs / Records**, **borrado lógico (*Soft Delete*)**, optimización de rendimiento y mitigación del problema **N+1** mediante **Entity Graphs**, el patrón de consulta en **dos pasos** y paginación ligera con **Slice**.
+
+---
+
+## 🌟 Novedades principales de la Semana 4
+
+1. **Evolución relacional del modelo de datos:**
+   - Nueva entidad y tabla `Category` para clasificar eventos (`Conciertos`, `Tecnología`, `Talleres`, etc.).
+   - Relación obligatoria **Many-to-One** entre `Event` y `Venue` (`events.venue_id`).
+   - Relación **Many-to-Many** entre `Event` y `Category` gestionada mediante tabla intermedia `events_categories`.
+   - Campo obligatorio `ciudad` en `Venue` con índices para búsquedas geográficas eficientes.
+
+2. **Control de migraciones con Flyway:**
+   - La base de datos deja de gestionarse con `ddl-auto=update`. Ahora el esquema lo versiona **Flyway** (`V1__estructura_inicial.sql`, `V2__evolucion_relacional.sql`, `V3__seed_datos.sql`).
+   - Hibernate pasa a modo `validate`: solo comprueba que las entidades coincidan estrictamente con las tablas existentes.
+   - Población de datos inicial masiva (**15 lugares y 200 eventos** con fechas y categorías coherentes).
+
+3. **Arquitectura desacoplada con DTOs y Records:**
+   - `EventRequest`: DTO para creación y edición donde lugar y categorías se referencian por ID.
+   - `EventSummaryDTO`: `Record` aplanado para listados masivos de alto rendimiento.
+   - `EventDetailDTO`: `Record` para vistas de detalle con lugar y lista de nombres de categorías.
+
+4. **Borrado lógico (*Soft Delete*):**
+   - La eliminación de eventos (`DELETE /api/events/{id}` y botón de eliminar en web) no destruye filas físicas: marca `activo = false`.
+   - Uso de `@SQLRestriction("activo = true")` a nivel de entidad: Hibernate filtra de forma transparente los eventos inactivos en cualquier consulta.
+
+5. **Optimización de consultas JPA y solución al problema N+1:**
+   - Paginación mediante `Slice` en lugar de `Page`: elimina la costosa consulta adicional `COUNT(*)` sobre colecciones voluminosas.
+   - Proyecciones DTO directas (`SELECT new EventSummaryDTO(...)`) con `JOIN`.
+   - Carga con `@EntityGraph` para detalles completos en una sola consulta.
+   - **Patrón de dos pasos (*Two-step fetch*)**: primero pagina entidades/IDs haciendo fetch únicamente del `Venue` (evita el warning de Hibernate `HHH000104` y duplicación en memoria), y luego recupera las colecciones `ManyToMany` en una sola consulta secundaria conservando el orden.
+   - Motor de búsqueda multicriterio con normalización y escape de caracteres especiales (`%`, `_`, `\`) en sentencias `LIKE`.
+
+6. **Auditoría y observabilidad SQL:**
+   - Configuración de logging en `TRACE` (`org.hibernate.orm.jdbc.bind`) para inspeccionar en tiempo real los valores asignados a los parámetros en consola.
 
 ---
 
 ## 🏗️ Arquitectura del proyecto
 
-El proyecto sigue una arquitectura en capas típica de Spring Boot, separando responsabilidades de la siguiente manera:
+El proyecto sigue una arquitectura en capas limpia y desacoplada:
 
 ```
-Controller (API)  ─┐
-                    ├─→  Service  →  Repository  →  Base de datos
-Controller (Vistas)─┘         ↓
-                           Model (Entidades)
-                               ↓
-                          Exception (Manejo de errores)
+Controller (API REST)  ─┐
+                         ├─→  Service  →  Repository  →  Base de datos (PostgreSQL / Flyway)
+Controller (Vistas Web) ─┘         ↓
+                                  DTOs / Model (Entidades con JPA y validaciones)
+                                   ↓
+                              Exception (Manejo de errores centralizado)
 ```
-
-La novedad de esta semana es que ahora existen **dos tipos de controladores** que comparten la misma capa de servicio: los controladores REST (`@RestController`, ya existentes) y los nuevos controladores de vistas (`@Controller`), que renderizan plantillas HTML con Thymeleaf para un panel administrativo navegable desde el navegador.
 
 ### 📁 `model`
-Contiene las **entidades JPA** que representan las tablas de la base de datos.
+Entidades JPA que mapean el esquema relacional versionado:
+- **`Event.java`**: evento con `id`, `nombre`, `fecha`, `descripcion`, bandera `activo` para borrado lógico (`@SQLRestriction`), relación `@ManyToOne` obligatoria hacia `Venue` y relación `@ManyToMany` hacia `Category` mediante la tabla intermedia `events_categories`.
+- **`Venue.java`**: lugar físico con `id`, `nombre`, `direccion`, `ciudad` (nuevo) y `capacidad`.
+- **`Category.java`**: clasificación temática con `id`, `nombre` único y `descripcion`.
 
-- **`Event.java`**: representa un evento (`id`, `nombre`, `fecha`, `descripcion`). Incluye anotaciones de **Bean Validation** (`@NotBlank`, `@NotNull`, `@Size`) usadas tanto por la API como por los formularios web.
-- **`Venue.java`**: representa un lugar (`id`, `nombre`, `direccion`, `capacidad`). También validado con `@NotBlank`, `@NotNull` y `@Min`.
-
-Ambas usan Lombok (`@Getter`, `@Setter`, `@AllArgsConstructor`, `@NoArgsConstructor`) para reducir código repetitivo, y anotaciones de Swagger/OpenAPI para marcar el campo `id` como de solo lectura en la documentación.
+### 📁 `dto`
+Desacopla la representación interna de la base de datos de los contratos web y REST:
+- **`EventRequest`**: objeto recibido en creación/actualización con validaciones Bean Validation (`@NotNull venueId`, `@NotEmpty categoryIds`).
+- **`EventSummaryDTO`**: `record` inmutable optimizado para tablas y listados masivos.
+- **`EventDetailDTO`**: `record` inmutable con el detalle exhaustivo del evento y sus relaciones.
 
 ### 📁 `repository`
-Contiene las interfaces que extienden `JpaRepository`, encargadas del acceso a datos.
-
-- **`EventRepository`** y **`VenueRepository`**: además de los métodos CRUD que provee Spring Data JPA, incluyen una consulta derivada `findByNombreContaining(...)` para búsquedas paginadas por nombre.
+Interfaces que extienden `JpaRepository` con consultas JPQL optimizadas:
+- **`EventRepository`**:
+  - `buscar(...)`: consulta JPQL combinada proyectada a `EventSummaryDTO` con soporte de `Slice`.
+  - `findWithRelationsById(id)`: carga puntual mediante `@EntityGraph(attributePaths = {"venue", "categories"})`.
+  - `findAllWithRelationsByIdIn(ids)`: segundo paso de carga masiva con `JOIN FETCH` y `LEFT JOIN FETCH` sin paginación en memoria.
+  - Finders especializados: `findByVenueCiudad...`, `findByVenueCapacidad...`, `findByFechaBetween...`, y `findByCategoriaNombre...` (utilizando subconsulta `EXISTS` para evitar duplicidad).
+- **`VenueRepository`**: CRUD y búsqueda paginada por nombre (`findByNombreContaining`).
+- **`CategoryRepository`**: consulta ordenada `findAllByOrderByNombreAsc()`.
 
 ### 📁 `service`
-Contiene la **lógica de negocio** de la aplicación. Es la capa intermedia entre los controladores (tanto REST como de vistas) y los repositorios.
-
-- **`EventService`** y **`VenueService`**: implementan las operaciones de guardar, listar (paginado), buscar por ID, actualizar y eliminar. También incluyen las **validaciones de negocio** (por ejemplo, que el nombre no esté vacío o que la capacidad de un venue sea mayor a 0), lanzando excepciones personalizadas cuando los datos no son válidos o el recurso no existe.
+Lógica de negocio, orquestación de transacciones y reglas de integridad:
+- **`EventService`**: búsqueda multicriterio con valores centinela de fechas, normalización y escape `LIKE`, validaciones de negocio, borrado lógico (`softDelete`), y orquestación del patrón de dos pasos.
+- **`VenueService`**: validación de datos requeridos (incluyendo `ciudad`), actualización y control de integridad referencial (captura `DataIntegrityViolationException` si se intenta eliminar un lugar con eventos).
+- **`CategoryService`**: listado y validación de existencia para colecciones de identificadores.
 
 ### 📁 `controller`
-Expone tanto los **endpoints REST** como las **rutas del panel web**, delegando siempre el trabajo a la capa de servicio.
+Exposición dual del sistema:
+- **Controladores REST** (`@RestController`, documentados con OpenAPI 3):
+  - **`EventController`** (`/api/events`): creación con DTO, búsqueda multicriterio, endpoints de filtros individuales (`/por-ciudad`, `/por-categoria`, `/por-capacidad`, `/por-fechas`), detalle, edición y eliminación lógica (código HTTP 204).
+  - **`VenueController`** (`/api/venues`): operaciones CRUD para lugares.
+- **Controladores de Vistas** (`@Controller` con Thymeleaf):
+  - **`EventViewController`** (`/admin/events`): listado con barra de filtros, navegación `Slice`, formulario con selector de lugar y checkboxes de categorías, edición y borrado lógico con patrón Post/Redirect/Get.
+  - **`VenueViewController`** (`/admin/venues`): administración de lugares físicos incluyendo el nuevo campo de ciudad.
 
-**Controladores REST** (JSON, documentados con Swagger):
-- **`EventController`** → `/api/events`
-- **`VenueController`** → `/api/venues`
-
-**Controladores de vistas** (HTML con Thymeleaf, nuevos en esta entrega):
-- **`EventViewController`** → `/admin/events`
-- **`VenueViewController`** → `/admin/venues`
-
-Cada controlador REST soporta `POST`, `GET` (listado paginado y por ID), `PUT` y `DELETE`, documentado con anotaciones de **Springdoc OpenAPI** (`@Tag`, `@Operation`, `@ApiResponse`). Los controladores de vistas exponen rutas equivalentes pensadas para un navegador: listado paginado, detalle, formulario de creación/edición y eliminación mediante formularios POST.
-
-### 📁 `exception`
-Maneja los errores de forma centralizada.
-
-- **`ResourceNotFoundException`**: se lanza cuando no se encuentra un evento o lugar por su ID.
-- **`InvalidDataException`**: se lanza cuando los datos enviados no cumplen las reglas de negocio.
-- **`GlobalExceptionHandler`**: mediante `@RestControllerAdvice`, intercepta estas excepciones (y cualquier otra genérica) **solo para los controladores REST**, devolviendo una respuesta JSON estandarizada con `timestamp`, `status`, `error` y `message`.
-- Los **controladores de vistas** (`EventViewController`, `VenueViewController`) manejan estas mismas excepciones de forma independiente, mediante métodos `@ExceptionHandler` locales que redirigen al listado correspondiente mostrando un mensaje de error amigable en la interfaz, en lugar de responder JSON.
-
-### 📁 `config`
-Contiene configuración adicional de la aplicación.
-
-- **`DataSeederConfig`**: al iniciar la aplicación, precarga **15 lugares** y **15 eventos** de ejemplo (ampliado respecto a la semana anterior) para facilitar las pruebas manuales y ver la paginación en acción tanto en Swagger como en el panel administrativo.
-
-### 📄 `EventifyApplication.java`
-Clase principal que arranca la aplicación Spring Boot.
-
-### 📁 `resources`
-- **`application.properties`**: configuración de conexión a la base de datos y de Hibernate/JPA (dialecto, autogeneración de esquema, logueo de SQL), además de restringir la documentación de Swagger únicamente a las rutas `/api/**`.
-- **`static/css/styles.css`**: hoja de estilos del panel administrativo (tablas, botones, formularios, paginación, alertas).
-- **`templates/`**: plantillas Thymeleaf del panel web.
-    - `events/list.html`, `events/detail.html`, `events/form.html`: listado paginado, detalle y formulario (creación/edición) de eventos.
-    - `venues/list.html`, `venues/detail.html`, `venues/form.html`: listado paginado, detalle y formulario (creación/edición) de lugares.
-    - `fragments/layout.html`: fragmentos reutilizables de navegación (`nav`) y pie de página (`footer`), incluidos en todas las vistas.
-    - `fragments/error.html`: página genérica de error para el panel web.
-
-### 📁 `test`
-Incluye:
-- **Pruebas unitarias** (con **Mockito**, mockeando los repositorios) para la capa `service` (`EventServiceTest`, `VenueServiceTest`).
-- **Pruebas de integración de repositorio** con **`@DataJpaTest`** (`EventRepositoryTest`, `VenueRepositoryTest`).
-- **Pruebas de integración de los controladores de vistas** con **`@SpringBootTest` + `MockMvc`** (`EventViewControllerTest`, `VenueViewControllerTest`), que verifican listados con y sin datos, carga de formularios, guardado exitoso con redirección, y re-renderizado del formulario con errores de validación cuando los datos son inválidos.
+### 📁 `resources/db/migration`
+Scripts SQL secuenciales ejecutados por Flyway:
+- **`V1__estructura_inicial.sql`**: tablas base heredadas de la semana 3 (`venues` y `events`).
+- **`V2__evolucion_relacional.sql`**: añade columna `ciudad` a `venues`, columna `activo` a `events`, crea la tabla `categories`, establece la clave foránea `events.venue_id`, crea la tabla intermedia `events_categories` e indexa columnas clave para búsquedas.
+- **`V3__seed_datos.sql`**: carga masiva de los 15 lugares con ciudad y 200 eventos distribuidos con categorías coherentes.
 
 ---
 
@@ -87,45 +102,45 @@ Incluye:
 
 - **Java 21**
 - **Spring Boot 4.1.1**
-- **Spring Data JPA**
+- **Spring Data JPA & Hibernate 7**
+- **Flyway 11** (`flyway-database-postgresql`) — control de versiones del esquema
 - **Spring Web MVC** (`spring-boot-starter-webmvc`)
-- **Thymeleaf** (`spring-boot-starter-thymeleaf`) — motor de plantillas del panel administrativo
-- **Bean Validation** (`spring-boot-starter-validation`) — validación de formularios y de la API
-- **PostgreSQL** (base de datos principal)
-- **H2** (dependencia disponible para pruebas en memoria)
+- **Thymeleaf** (`spring-boot-starter-thymeleaf`) — motor de plantillas web
+- **Bean Validation** (`spring-boot-starter-validation`) — validación declarativa
+- **PostgreSQL 16** (base de datos principal y motor relacional)
+- **H2 Database** (soporte para pruebas y desarrollo)
 - **Lombok**
-- **Springdoc OpenAPI** (documentación Swagger, restringida a `/api/**`)
-- **JUnit 5 + Mockito** (pruebas unitarias)
-- **MockMvc** (`spring-boot-starter-webmvc-test`, `spring-boot-starter-data-jpa-test`) — pruebas de integración de vistas y repositorios
-- **Maven** (con Maven Wrapper incluido)
+- **Springdoc OpenAPI 3.1.0** (Swagger UI en `/api/**`)
+- **JUnit 5 & Mockito** (pruebas unitarias y de integración)
+- **MockMvc** (`@SpringBootTest` y `@DataJpaTest`)
+- **Maven** (con Maven Wrapper)
 
 ---
 
 ## ✅ Requisitos previos
 
-Antes de ejecutar el proyecto necesitas tener instalado:
+- **JDK 21** o superior.
+- **Docker** (para el contenedor de PostgreSQL).
+- **DBeaver** (opcional, para visualización e inspección del esquema).
 
-- **JDK 21** o superior
-- **Docker** (para levantar la base de datos PostgreSQL)
-- **DBeaver** (para visualizar y administrar la base de datos)
-
-> No necesitas tener Maven instalado localmente: el proyecto incluye el **Maven Wrapper** (`mvnw` / `mvnw.cmd`).
+> No es necesario instalar Maven manualmente; se incluye el wrapper `./mvnw`.
 
 ---
 
 ## 🐳 Paso 1: Levantar la base de datos con Docker
 
-Según la configuración en `application.properties`, la aplicación espera una base de datos PostgreSQL con estos datos:
+La aplicación y los tests de integración esperan una base de datos PostgreSQL en el puerto `5433`:
 
 | Parámetro | Valor |
 |---|---|
 | Host | `localhost` |
 | Puerto | `5433` |
-| Base de datos | `eventify` |
+| Base de datos principal | `eventify` |
+| Base de datos de pruebas | `eventify_test` |
 | Usuario | `eventify` |
 | Contraseña | `eventify` |
 
-Levanta un contenedor de PostgreSQL con esos mismos valores ejecutando:
+Ejecuta el siguiente comando para iniciar el contenedor:
 
 ```bash
 docker run --name eventify-db \
@@ -136,132 +151,153 @@ docker run --name eventify-db \
   -d postgres:16
 ```
 
-Esto crea y ejecuta un contenedor llamado `eventify-db`, mapeando el puerto `5433` de tu máquina al puerto `5432` interno del contenedor (donde escucha PostgreSQL por defecto).
-
-Para verificar que el contenedor está corriendo:
-
+Para verificar el estado del contenedor:
 ```bash
 docker ps
 ```
 
-Para detenerlo o volver a iniciarlo en otro momento:
-
+Para detener o volver a iniciar el contenedor:
 ```bash
 docker stop eventify-db
 docker start eventify-db
 ```
 
-> Las pruebas de repositorio (`@DataJpaTest`) usan una base de datos separada, `eventify_test`, definida en `src/test/resources/application.properties`. Si vas a ejecutar `./mvnw test`, crea también esa base de datos (por ejemplo, conectándote al mismo contenedor de Docker y ejecutando `CREATE DATABASE eventify_test;` desde DBeaver).
+> **Importante para las pruebas:** Las pruebas de integración (`@SpringBootTest` y `@DataJpaTest`) se conectan a `eventify_test`. Puedes crearla ejecutando dentro del contenedor:
+> ```bash
+> docker exec -it eventify-db psql -U eventify -c "CREATE DATABASE eventify_test;"
+> ```
 
 ---
 
-## 🔍 Paso 2: Conectarte con DBeaver
+## 🔍 Paso 2: Flyway y validación del esquema con DBeaver
 
-1. Abre **DBeaver** y crea una nueva conexión: `Database` → `New Database Connection` → selecciona **PostgreSQL**.
-2. Completa los datos de conexión:
-    - **Host**: `localhost`
-    - **Port**: `5433`
-    - **Database**: `eventify`
-    - **Username**: `eventify`
-    - **Password**: `eventify`
-3. Da clic en **Test Connection** para confirmar que todo esté correcto (si DBeaver pide descargar el driver de PostgreSQL, acéptalo).
-4. Guarda la conexión y conéctate.
-5. Una vez que ejecutes la aplicación (paso 3), Hibernate creará automáticamente las tablas `events` y `venues` dentro de la base `eventify`, y podrás explorarlas desde DBeaver.
+1. Abre **DBeaver** y crea una nueva conexión a **PostgreSQL**:
+   - **Host:** `localhost` | **Port:** `5433` | **Database:** `eventify` | **User/Password:** `eventify` / `eventify`
+2. Al iniciar la aplicación Spring Boot, **Flyway se ejecuta automáticamente** antes de que Hibernate interactúe con los datos:
+   - Aplica `V1`, `V2` y `V3`.
+   - Crea la tabla de control `flyway_schema_history`.
+   - `spring.jpa.hibernate.ddl-auto=validate` valida que las clases Java coincidan exactamente con la base generada por las migraciones.
+3. Podrás comprobar en DBeaver las tablas `events`, `venues`, `categories`, `events_categories` y los 200 eventos ya insertados con sus claves foráneas.
 
 ---
 
 ## ▶️ Paso 3: Ejecutar la aplicación
 
-Con la base de datos ya corriendo en Docker, ejecuta el proyecto desde la raíz del repositorio usando el Maven Wrapper:
+Sitúate en el directorio de la semana 4 y ejecuta:
 
 **En Linux / macOS:**
 ```bash
+cd eventify-semana04
 ./mvnw spring-boot:run
 ```
 
 **En Windows:**
-```bash
+```cmd
+cd eventify-semana04
 mvnw.cmd spring-boot:run
 ```
 
-Al iniciar, Spring Boot:
-- Se conectará a la base de datos PostgreSQL en el puerto `5433`.
-- Creará/actualizará automáticamente las tablas (`spring.jpa.hibernate.ddl-auto=update`).
-- Ejecutará el `DataSeederConfig`, insertando **15 lugares** y **15 eventos** de ejemplo.
-- Quedará disponible en `http://localhost:8080`.
+Al arrancar la aplicación:
+- Flyway valida y ejecuta las migraciones pendientes.
+- Hibernate valida la estructura de las entidades.
+- Las consultas SQL y los parámetros vinculados se visualizan en consola gracias al nivel `TRACE`.
+- La aplicación quedará disponible en: `http://localhost:8080`.
 
 ---
 
-## 🖥️ Panel administrativo (Thymeleaf)
+## 🖥️ Panel administrativo web (Thymeleaf)
 
-Además de la API REST, esta semana se incorpora un panel web navegable directamente desde el navegador, pensado para gestionar eventos y lugares sin necesidad de herramientas como Postman o Swagger:
+Accede desde tu navegador a los módulos de administración:
 
 ```
 http://localhost:8080/admin/events
 http://localhost:8080/admin/venues
 ```
 
-Desde el panel puedes:
+### Funcionalidades del panel web
 
-| Acción | Ruta |
-|---|---|
-| Ver listado paginado | `GET /admin/events` · `GET /admin/venues` |
-| Ver detalle | `GET /admin/events/{id}` · `GET /admin/venues/{id}` |
-| Mostrar formulario de creación | `GET /admin/events/new` · `GET /admin/venues/new` |
-| Crear (procesar formulario) | `POST /admin/events` · `POST /admin/venues` |
-| Mostrar formulario de edición | `GET /admin/events/{id}/edit` · `GET /admin/venues/{id}/edit` |
-| Actualizar (procesar formulario) | `POST /admin/events/{id}/edit` · `POST /admin/venues/{id}/edit` |
-| Eliminar | `POST /admin/events/{id}/delete` · `POST /admin/venues/{id}/delete` |
-
-**Comportamiento destacado:**
-- Si el catálogo está vacío, se muestra un mensaje amigable en lugar de una tabla vacía.
-- Al guardar o eliminar exitosamente, la aplicación redirige al listado mostrando un mensaje de confirmación (patrón *Post/Redirect/Get*).
-- Si los datos del formulario no son válidos (por ejemplo, un nombre vacío), el formulario se vuelve a mostrar con los datos ya escritos y los mensajes de error correspondientes, sin perder la información ingresada.
-- Los errores de negocio (recurso no encontrado, datos inválidos) capturados por los `ExceptionHandler` de cada `ViewController` redirigen al listado con un mensaje de error visible.
+| Acción | Ruta | Descripción |
+|---|---|---|
+| **Catálogo con filtros** | `GET /admin/events` | Listado paginado con barra de búsqueda por ciudad, categoría, capacidad mínima y rango de fechas. |
+| **Paginación Slice** | `GET /admin/events?page=X` | Navegación Anterior/Siguiente conservando los filtros activos en la URL. |
+| **Detalle de evento** | `GET /admin/events/{id}` | Muestra información del evento, lugar, ciudad y etiquetas (*badges*) de categorías. |
+| **Nuevo evento** | `GET /admin/events/new` | Formulario con selector desplegable de lugares (`<select>`) y casillas de selección múltiple de categorías (`<input type="checkbox">`). |
+| **Guardar evento** | `POST /admin/events` | Valida datos con Bean Validation; si hay errores, preserva los campos y las opciones seleccionadas. |
+| **Editar evento** | `GET /admin/events/{id}/edit` | Carga el formulario precargado con el lugar y las categorías asignadas. |
+| **Actualizar evento** | `POST /admin/events/{id}/edit` | Procesa la edición y redirige con mensaje flash de éxito. |
+| **Borrado lógico** | `POST /admin/events/{id}/delete` | Desactiva el evento; desaparece de inmediato de la lista sin romper historial en BD. |
+| **Gestión de lugares** | `/admin/venues` | CRUD completo de lugares incluyendo la gestión del campo `ciudad`. |
 
 ---
 
-## 📑 Documentación de la API (Swagger)
+## 📑 Documentación de la API REST (Swagger / OpenAPI)
 
-Una vez levantada la aplicación, puedes explorar y probar todos los endpoints REST desde Swagger UI:
+Explora y ejecuta las solicitudes interactivas en Swagger UI:
 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-> La documentación de Swagger está restringida únicamente a las rutas `/api/**` (`springdoc.paths-to-match=/api/**`); las rutas `/admin/**` del panel web no forman parte del contrato de la API y no aparecen en Swagger.
+> La documentación Swagger abarca exclusivamente las rutas `/api/**`.
 
-### Endpoints principales
+### Endpoints principales de Eventos (`/api/events`)
 
-**Eventos** (`/api/events`)
-| Método | Ruta | Descripción |
+| Método | Endpoint | Descripción |
 |---|---|---|
-| `POST` | `/api/events` | Crear un evento |
-| `GET` | `/api/events` | Listar eventos (paginado) |
-| `GET` | `/api/events/{id}` | Consultar evento por ID |
-| `PUT` | `/api/events/{id}` | Actualizar evento |
-| `DELETE` | `/api/events/{id}` | Eliminar evento |
+| `POST` | `/api/events` | Registra un evento recibiendo `EventRequest` con `venueId` y lista de `categoryIds`. Retorna `201 Created` con `EventDetailDTO`. |
+| `GET` | `/api/events` | **Búsqueda multicriterio:** filtros combinados opcionales (`ciudad`, `categoria`, `capacidadMin`, `desde`, `hasta`) con orden fijo `fecha DESC` y paginación por `Slice`. |
+| `GET` | `/api/events/por-ciudad` | Finder por coincidencia parcial e insensible a mayúsculas sobre la ciudad del lugar. |
+| `GET` | `/api/events/por-categoria` | Finder por categoría evitando duplicidad de eventos con subconsulta `EXISTS`. |
+| `GET` | `/api/events/por-capacidad` | Finder por capacidad mínima del lugar asociado. |
+| `GET` | `/api/events/por-fechas` | Finder por rango de fechas (`desde` y `hasta`). |
+| `GET` | `/api/events/{id}` | Retorna `EventDetailDTO`. Si el evento no existe o está inactivo (`activo=false`), responde `404 Not Found`. |
+| `PUT` | `/api/events/{id}` | Actualiza datos y relaciones de un evento activo. |
+| `DELETE` | `/api/events/{id}` | **Borrado lógico:** marca `activo=false` y responde `204 No Content`. |
 
-**Lugares** (`/api/venues`)
-| Método | Ruta | Descripción |
+### Endpoints de Lugares (`/api/venues`)
+
+| Método | Endpoint | Descripción |
 |---|---|---|
-| `POST` | `/api/venues` | Crear un lugar |
-| `GET` | `/api/venues` | Listar lugares (paginado) |
-| `GET` | `/api/venues/{id}` | Consultar lugar por ID |
-| `PUT` | `/api/venues/{id}` | Actualizar lugar |
-| `DELETE` | `/api/venues/{id}` | Eliminar lugar |
-
-> El listado soporta parámetros de paginación estándar de Spring: `?page=0&size=10&sort=nombre,asc`
+| `POST` | `/api/venues` | Crear lugar (`nombre`, `direccion`, `ciudad`, `capacidad`). |
+| `GET` | `/api/venues` | Listar lugares (paginado por `Page`). |
+| `GET` | `/api/venues/{id}` | Consultar lugar por ID. |
+| `PUT` | `/api/venues/{id}` | Actualizar datos y ciudad del lugar. |
+| `DELETE` | `/api/venues/{id}` | Eliminar lugar (protegido contra violación de integridad si posee eventos). |
 
 ---
 
-## 🧪 Ejecutar las pruebas
+## 🚀 Estrategias de rendimiento y optimización JPA
+
+En esta entrega se aplicaron patrones específicos para resolver los problemas de rendimiento comunes en aplicaciones empresariales:
+
+1. **Evitar el problema N+1 en listados:**
+   - Para el catálogo principal se emplea **proyección a constructor DTO** (`new EventSummaryDTO(...)`) con `JOIN e.venue v`, trayendo exactamente las columnas necesarias en **1 única consulta SQL**.
+2. **Patrón de dos pasos (*Two-step fetch*) para paginación segura con colecciones:**
+   - Hacer un `JOIN FETCH` sobre colecciones `ManyToMany` en una consulta paginada provoca que Hibernate aplique la paginación en memoria emitiendo la advertencia `HHH000104`.
+   - Se resolvió con dos pasos:
+     1. Se pagina la consulta haciendo fetch solo de la relación `@ManyToOne` hacia `Venue`.
+     2. Con la lista de IDs de la página actual, se dispara una única consulta con `JOIN FETCH e.venue LEFT JOIN FETCH e.categories WHERE e.id IN :ids` para cargar las colecciones de forma limpia.
+3. **Paginación con `Slice`:**
+   - En catálogos grandes, calcular el total de páginas (`SELECT count(*)`) añade una penalización de tiempo innecesaria. `Slice` solicita únicamente `size + 1` registros para determinar si existe una página siguiente sin contar todo el universo de filas.
+
+---
+
+## 🧪 Ejecución de pruebas
+
+El proyecto cuenta con una suite completa de pruebas unitarias y de integración:
 
 ```bash
+cd eventify-semana04
 ./mvnw test
 ```
 
-Esto ejecuta:
-- Las **pruebas unitarias** de la capa `service` (con Mockito).
-- Las **pruebas de integración** de la capa `repository` (con `@DataJpaTest`, usando la base `eventify_test`).
-- Las **pruebas de integración** de los controladores de vistas (con `@SpringBootTest` + `MockMvc`), que verifican el comportamiento del panel administrativo: listados con y sin datos, carga de formularios, creación exitosa con redirección, y re-renderizado del formulario ante datos inválidos.
+### Cobertura de pruebas (38 pruebas en total):
+- **Unitarias (`service` con Mockito):**
+  - `EventServiceTest`: validación de campos obligatorios, asignación de relaciones, formateo y escape `LIKE`, ordenamiento y borrado lógico.
+  - `VenueServiceTest`: validación de nombre, capacidad, ciudad obligatoria y reglas de guardado.
+- **Integración de datos (`repository` con `@DataJpaTest`):**
+  - `EventRepositoryTest`: validación de consultas JPQL, Entity Graphs, filtros por ciudad, categoría, rango de fechas y filtro global `@SQLRestriction`.
+  - `VenueRepositoryTest`: persistencia, generación de IDs y búsqueda paginada por nombre.
+- **Integración web y vistas (`web` con `@SpringBootTest` + `MockMvc`):**
+  - `EventViewControllerTest`: listado con y sin datos, aplicación de filtros de búsqueda en URLs, renderizado de formularios, guardado con selección de venue/categorías, validaciones y redirección tras borrado lógico.
+  - `VenueViewControllerTest`: renderizado de tabla, mensajes de catálogo vacío, validación de campos obligatorios (incluyendo ciudad) y redirección Post/Redirect/Get.
