@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Eventify — Eventos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<main>
+    <h1>Catálogo de eventos</h1>
+
+    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+
+    <p><a class="btn" th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
+
+    <!-- Filtros: método GET para que queden en la URL -->
+    <form class="filters" method="get" th:action="@{/admin/events}">
+        <input type="text"   name="ciudad"       th:value="${ciudad}"       placeholder="Ciudad (ej. bog)"/>
+        <input type="text"   name="categoria"    th:value="${categoria}"    placeholder="Categoría (ej. rock)"/>
+        <input type="number" name="capacidadMin" th:value="${capacidadMin}" placeholder="Capacidad mínima" min="0"/>
+        <input type="date"   name="desde"        th:value="${desde}"/>
+        <input type="date"   name="hasta"        th:value="${hasta}"/>
+        <button type="submit" class="btn">Filtrar</button>
+        <a class="btn btn-secondary" th:href="@{/admin/events}">Limpiar</a>
+    </form>
+
+    <div class="empty-state" th:if="${eventos.isEmpty()}">
+        <p>Actualmente no hay eventos programados.</p>
+    </div>
+
+    <table th:unless="${eventos.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Evento</th>
+            <th>Fecha</th>
+            <th>Lugar</th>
+            <th>Ciudad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="evento : ${eventos}">
+            <td th:text="${evento.id()}">1</td>
+            <td th:text="${evento.nombreEvento()}">Nombre</td>
+            <td th:text="${evento.fecha()}">2026-01-01</td>
+            <td th:text="${evento.nombreLugar()}">Lugar</td>
+            <td th:text="${evento.ciudad()}">Ciudad</td>
+            <td>
+                <div style="display:flex; flex-wrap:wrap; gap:0.25rem;">
+                    <a class="btn btn-view" th:href="@{/admin/events/{id}(id=${evento.id()})}">Ver</a>
+                    <a class="btn btn-edit" th:href="@{/admin/events/{id}/edit(id=${evento.id()})}">Editar</a>
+                    <form th:action="@{/admin/events/{id}/delete(id=${evento.id()})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este evento?');" style="display:inline;">
+                        <button type="submit" class="btn btn-delete">Eliminar</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Navegación basada en Slice: sin total de páginas, solo "hay anterior / hay siguiente" -->
+    <div class="pagination">
+        <a th:if="${pagina.hasPrevious()}" th:href="@{${urlAnterior}}">&laquo; Anterior</a>
+        <span th:unless="${pagina.hasPrevious()}" class="disabled">&laquo; Anterior</span>
+
+        <span>Página <span th:text="${pagina.number + 1}">1</span></span>
+
+        <a th:if="${pagina.hasNext()}" th:href="@{${urlSiguiente}}">Siguiente &raquo;</a>
+        <span th:unless="${pagina.hasNext()}" class="disabled">Siguiente &raquo;</span>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
