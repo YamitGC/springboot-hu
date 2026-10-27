@@ -1,11 +1,16 @@
 package com.springboot.eventify.controller;
 
+import com.springboot.eventify.dto.EventCreateDTO;
 import com.springboot.eventify.dto.EventDetailDTO;
-import com.springboot.eventify.dto.EventRequest;
+import com.springboot.eventify.dto.EventResponseDTO;
 import com.springboot.eventify.dto.EventSummaryDTO;
 import com.springboot.eventify.service.EventService;
+import com.springboot.eventify.validation.group.OnCreate;
+import com.springboot.eventify.validation.group.OnUpdate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +20,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -33,140 +40,122 @@ public class EventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registrar un nuevo evento",
-            description = "Crea el evento vinculándolo a un lugar (venueId, obligatorio) y a una o más categorías "
-                    + "(categoryIds). Los vínculos con las categorías se guardan en cascada en la tabla events_categories.")
+            description = "Crea un nuevo evento mediante EventCreateDTO y lo vincula al lugar y categorías.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Evento creado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos o categorías inexistentes"),
-            @ApiResponse(responseCode = "404", description = "El lugar indicado no existe")
+            @ApiResponse(responseCode = "201", description = "Evento creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Lugar o categoría no encontrada",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public EventDetailDTO create(@RequestBody EventRequest request) {
-        return EventDetailDTO.from(eventService.save(request));
+    public EventResponseDTO create(@Validated(OnCreate.class) @RequestBody EventCreateDTO dto) {
+        return eventService.saveDTO(dto);
     }
 
     @GetMapping
     @Operation(summary = "Buscar eventos con filtros combinados (paginación por Slice)",
             description = """
                     Devuelve un Slice<EventSummaryDTO> (Record aplanado: evento, fecha, lugar y ciudad).
-                    - Orden fijo: fecha descendente (los más recientes primero). El parámetro 'sort' se ignora.
-                    - Todos los filtros son opcionales, se combinan con AND, son parciales e insensibles a mayúsculas.
-                    - Borrado lógico: los eventos con activo=false NUNCA aparecen en los resultados.
-                    - Slice no calcula el total de registros: la respuesta incluye 'last' para saber si hay más páginas.
+                    - Coexistencia arquitectónica: usa el Record optimizado para listados masivos.
+                    - Orden fijo: fecha descendente.
+                    - Borrado lógico: los eventos con activo=false no aparecen.
                     """)
     @ApiResponse(responseCode = "200", description = "Fragmento de resultados (Slice) de eventos activos")
     public Slice<EventSummaryDTO> search(
-            @Parameter(description = "Ciudad del lugar. Coincidencia parcial e insensible a mayúsculas (ej: 'bog' encuentra 'Bogotá')")
+            @Parameter(description = "Ciudad del lugar (coincidencia parcial)")
             @RequestParam(required = false) String ciudad,
-            @Parameter(description = "Nombre de una categoría asignada al evento. Parcial e insensible a mayúsculas (ej: 'rock')")
+            @Parameter(description = "Nombre de una categoría (coincidencia parcial)")
             @RequestParam(required = false) String categoria,
-            @Parameter(description = "Capacidad mínima del lugar del evento (ej: 500)")
+            @Parameter(description = "Capacidad mínima del lugar")
             @RequestParam(required = false) Integer capacidadMin,
-            @Parameter(description = "Fecha inicial del rango, inclusive (formato yyyy-MM-dd)")
+            @Parameter(description = "Fecha inicial (yyyy-MM-dd)")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
-            @Parameter(description = "Fecha final del rango, inclusive (formato yyyy-MM-dd)")
+            @Parameter(description = "Fecha final (yyyy-MM-dd)")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
         return eventService.search(ciudad, categoria, capacidadMin, desde, hasta, pageable);
     }
 
-    // ---------------- Búsquedas por UN solo criterio (finders del repositorio) ----------------
-
-    @GetMapping("/por-ciudad")
-    @Operation(summary = "Buscar eventos por ciudad",
-            description = """
-                    Devuelve un Slice<EventDetailDTO> con lugar y categorías de cada evento.
-                    Coincidencia parcial e insensible a mayúsculas sobre la ciudad del lugar. Orden fijo: fecha descendente.
-                    Los eventos eliminados lógicamente (activo=false) no aparecen.
-                    """)
-    public Slice<EventDetailDTO> porCiudad(
-            @Parameter(description = "Ciudad (parcial, insensible a mayúsculas). Ej: 'bog'", required = true)
-            @RequestParam String ciudad,
-            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return eventService.findByCiudad(ciudad, pageable);
-    }
-
-    @GetMapping("/por-categoria")
-    @Operation(summary = "Buscar eventos por categoría",
-            description = """
-                    Devuelve un Slice<EventDetailDTO>. El nombre de la categoría se compara de forma parcial e
-                    insensible a mayúsculas; un evento aparece una sola vez aunque varias de sus categorías coincidan.
-                    Orden fijo: fecha descendente. Los eventos con activo=false no aparecen.
-                    """)
-    public Slice<EventDetailDTO> porCategoria(
-            @Parameter(description = "Nombre de la categoría (parcial, insensible a mayúsculas). Ej: 'rock'", required = true)
-            @RequestParam String categoria,
-            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return eventService.findByCategoria(categoria, pageable);
-    }
-
-    @GetMapping("/por-capacidad")
-    @Operation(summary = "Buscar eventos por capacidad mínima del lugar",
-            description = "Devuelve los eventos cuyo lugar tiene capacidad mayor o igual a la indicada, "
-                    + "ordenados por fecha descendente. Los eventos con activo=false no aparecen.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Fragmento de resultados"),
-            @ApiResponse(responseCode = "400", description = "Capacidad inválida")
-    })
-    public Slice<EventDetailDTO> porCapacidad(
-            @Parameter(description = "Capacidad mínima del lugar. Ej: 500", required = true)
-            @RequestParam Integer capacidadMin,
-            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return eventService.findByCapacidad(capacidadMin, pageable);
-    }
-
-    @GetMapping("/por-fechas")
-    @Operation(summary = "Buscar eventos por rango de fechas",
-            description = "Devuelve los eventos con fecha entre 'desde' y 'hasta' (ambas inclusive), "
-                    + "ordenados por fecha descendente. Los eventos con activo=false no aparecen.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Fragmento de resultados"),
-            @ApiResponse(responseCode = "400", description = "Rango inválido (desde posterior a hasta)")
-    })
-    public Slice<EventDetailDTO> porFechas(
-            @Parameter(description = "Fecha inicial, inclusive (yyyy-MM-dd)", required = true)
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
-            @Parameter(description = "Fecha final, inclusive (yyyy-MM-dd)", required = true)
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
-            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
-        return eventService.findByRangoFechas(desde, hasta, pageable);
-    }
-
-    // ---------------- CRUD por id ----------------
-
     @GetMapping("/{id}")
     @Operation(summary = "Consultar un evento activo por ID",
-            description = "Retorna 404 si el evento no existe o si fue eliminado lógicamente (activo=false).")
+            description = "Retorna un EventResponseDTO desacoplado con venueName y categoryNames planos. 404 si no existe.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Evento encontrado"),
-            @ApiResponse(responseCode = "404", description = "Evento no encontrado o inactivo")
+            @ApiResponse(responseCode = "404", description = "Evento no encontrado o inactivo",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public EventDetailDTO getById(@Parameter(description = "ID del evento a consultar") @PathVariable Long id) {
-        return EventDetailDTO.from(eventService.findById(id));
+    public EventResponseDTO getById(@Parameter(description = "ID del evento a consultar") @PathVariable Long id) {
+        return eventService.findByIdDTO(id);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar un evento existente",
-            description = "Reemplaza nombre, fecha, descripción, lugar y categorías. Un evento inactivo no puede actualizarse (404).")
+            description = "Actualiza los datos del evento mediante EventCreateDTO y retorna EventResponseDTO.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Evento actualizado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "404", description = "Evento o lugar no encontrado")
+            @ApiResponse(responseCode = "200", description = "Evento actualizado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Evento, lugar o categoría no encontrado",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public EventDetailDTO update(@PathVariable Long id, @RequestBody EventRequest request) {
-        return EventDetailDTO.from(eventService.update(id, request));
+    public EventResponseDTO update(@PathVariable Long id, @Validated(OnUpdate.class) @RequestBody EventCreateDTO dto) {
+        dto.setId(id);
+        return eventService.updateDTO(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Eliminar un evento (borrado lógico)",
-            description = "NO elimina la fila de la base de datos: marca el evento como activo=false para conservar "
-                    + "la trazabilidad histórica. Desde ese momento el evento deja de aparecer en listados, "
-                    + "búsquedas y consultas por ID.")
+            description = "Marca el evento como activo=false para conservar la trazabilidad histórica.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Evento desactivado correctamente"),
-            @ApiResponse(responseCode = "404", description = "Evento no encontrado")
+            @ApiResponse(responseCode = "204", description = "Evento desactivado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Evento no encontrado",
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public void delete(@PathVariable Long id) {
         eventService.softDelete(id);
+    }
+
+    // ---------------- Búsquedas por un solo criterio (finders optimizados) ----------------
+
+    @GetMapping("/por-ciudad")
+    @Operation(summary = "Buscar eventos por ciudad", description = "Devuelve un Slice<EventDetailDTO> filtrado por ciudad.")
+    public Slice<EventDetailDTO> porCiudad(
+            @Parameter(description = "Ciudad", required = true) @RequestParam String ciudad,
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return eventService.findByCiudad(ciudad, pageable);
+    }
+
+    @GetMapping("/por-categoria")
+    @Operation(summary = "Buscar eventos por categoría", description = "Devuelve un Slice<EventDetailDTO> filtrado por categoría.")
+    public Slice<EventDetailDTO> porCategoria(
+            @Parameter(description = "Categoría", required = true) @RequestParam String categoria,
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return eventService.findByCategoria(categoria, pageable);
+    }
+
+    @GetMapping("/por-capacidad")
+    @Operation(summary = "Buscar eventos por capacidad mínima", description = "Devuelve un Slice<EventDetailDTO> filtrado por capacidad.")
+    public Slice<EventDetailDTO> porCapacidad(
+            @Parameter(description = "Capacidad mínima", required = true) @RequestParam Integer capacidadMin,
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return eventService.findByCapacidad(capacidadMin, pageable);
+    }
+
+    @GetMapping("/por-fechas")
+    @Operation(summary = "Buscar eventos por rango de fechas", description = "Devuelve un Slice<EventDetailDTO> filtrado por rango de fechas.")
+    public Slice<EventDetailDTO> porFechas(
+            @Parameter(description = "Fecha inicial (yyyy-MM-dd)", required = true)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @Parameter(description = "Fecha final (yyyy-MM-dd)", required = true)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
+        return eventService.findByRangoFechas(desde, hasta, pageable);
     }
 }

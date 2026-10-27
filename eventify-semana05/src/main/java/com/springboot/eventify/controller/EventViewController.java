@@ -99,6 +99,7 @@ public class EventViewController {
         }
         eventService.save(event);
         redirectAttributes.addFlashAttribute("mensaje", "Evento creado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Evento creado exitosamente");
         return "redirect:/admin/events";
     }
 
@@ -122,6 +123,7 @@ public class EventViewController {
         }
         eventService.update(id, event);
         redirectAttributes.addFlashAttribute("mensaje", "Evento actualizado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Evento actualizado exitosamente");
         return "redirect:/admin/events";
     }
 
@@ -130,6 +132,7 @@ public class EventViewController {
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         eventService.softDelete(id);
         redirectAttributes.addFlashAttribute("mensaje", "Evento eliminado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Evento eliminado exitosamente");
         return "redirect:/admin/events";
     }
 
@@ -137,12 +140,14 @@ public class EventViewController {
     @ExceptionHandler(ResourceNotFoundException.class)
     public String manejarNoEncontrado(ResourceNotFoundException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/admin/events";
     }
 
     @ExceptionHandler(InvalidDataException.class)
     public String manejarDatoInvalido(InvalidDataException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/admin/events";
     }
 

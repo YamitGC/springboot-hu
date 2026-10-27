@@ -19,25 +19,25 @@
 
         <div class="field">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" th:field="*{nombre}"/>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</p>
         </div>
 
         <div class="field">
             <label for="direccion">Dirección</label>
-            <input type="text" id="direccion" th:field="*{direccion}"/>
+            <input type="text" id="direccion" th:field="*{direccion}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}">Error</p>
         </div>
 
         <div class="field">
             <label for="capacidad">Capacidad</label>
-            <input type="number" id="capacidad" th:field="*{capacidad}"/>
+            <input type="number" id="capacidad" th:field="*{capacidad}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('capacidad')}" th:errors="*{capacidad}">Error</p>
         </div>
 
         <div class="field">
             <label for="ciudad">Ciudad</label>
-            <input type="text" id="ciudad" th:field="*{ciudad}"/>
+            <input type="text" id="ciudad" th:field="*{ciudad}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('ciudad')}" th:errors="*{ciudad}">Error</p>
         </div>
 

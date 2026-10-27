@@ -29,6 +29,7 @@ public class EventRequest {
     private String nombre;
 
     @NotNull(message = "La fecha del evento es obligatoria")
+    @com.springboot.eventify.validation.NoPastEvents(message = "La fecha no puede ser anterior a hoy")
     private LocalDate fecha;
 
     @NotBlank(message = "La descripción del evento no puede estar vacía")

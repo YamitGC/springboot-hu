@@ -1,10 +1,13 @@
 package com.springboot.eventify.service;
 
+import com.springboot.eventify.dto.EventCreateDTO;
 import com.springboot.eventify.dto.EventDetailDTO;
 import com.springboot.eventify.dto.EventRequest;
+import com.springboot.eventify.dto.EventResponseDTO;
 import com.springboot.eventify.dto.EventSummaryDTO;
 import com.springboot.eventify.exception.InvalidDataException;
 import com.springboot.eventify.exception.ResourceNotFoundException;
+import com.springboot.eventify.mapper.EventMapper;
 import com.springboot.eventify.model.Event;
 import com.springboot.eventify.repository.EventRepository;
 import org.springframework.data.domain.PageRequest;
@@ -15,9 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.function.Function;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,15 +33,41 @@ public class EventService {
     private final EventRepository eventRepository;
     private final VenueService venueService;
     private final CategoryService categoryService;
+    private final EventMapper eventMapper;
 
     public EventService(EventRepository eventRepository,
                         VenueService venueService,
-                        CategoryService categoryService) {
+                        CategoryService categoryService,
+                        EventMapper eventMapper) {
         this.eventRepository = eventRepository;
         this.venueService = venueService;
         this.categoryService = categoryService;
+        this.eventMapper = eventMapper;
     }
 
+    // ---------- Operaciones Desacopladas con MapStruct y DTOs ----------
+    @Transactional
+    public EventResponseDTO saveDTO(EventCreateDTO dto) {
+        Event event = eventMapper.toEntity(dto);
+        Event saved = eventRepository.save(event);
+        return eventMapper.toResponseDTO(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public EventResponseDTO findByIdDTO(Long id) {
+        Event event = obtenerConRelaciones(id);
+        return eventMapper.toResponseDTO(event);
+    }
+
+    @Transactional
+    public EventResponseDTO updateDTO(Long id, EventCreateDTO dto) {
+        Event event = obtenerConRelaciones(id);
+        eventMapper.updateEntityFromDTO(dto, event);
+        Event saved = eventRepository.save(event);
+        return eventMapper.toResponseDTO(saved);
+    }
+
+    // ---------- Compatibilidad con formularios Thymeleaf y tests previos ----------
     @Transactional
     public Event save(EventRequest request) {
         Event event = new Event();
@@ -109,7 +138,7 @@ public class EventService {
     @Transactional
     public void softDelete(Long id) {
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("El evento con ID " + id + " no existe"));
         event.deactivate();
         eventRepository.save(event);
     }
@@ -136,7 +165,7 @@ public class EventService {
 
     private Event obtenerConRelaciones(Long id) {
         return eventRepository.findWithRelationsById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Evento no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("El evento con ID " + id + " no existe"));
     }
 
     private void aplicar(Event event, EventRequest request) {

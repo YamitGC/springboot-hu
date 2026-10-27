@@ -19,26 +19,26 @@
 
         <div class="field">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" th:field="*{nombre}"/>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error</p>
         </div>
 
         <div class="field">
             <label for="fecha">Fecha</label>
-            <input type="date" id="fecha" th:field="*{fecha}"/>
+            <input type="date" id="fecha" th:field="*{fecha}" th:errorclass="campo-invalido"/>
             <p class="error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}">Error</p>
         </div>
 
         <div class="field">
             <label for="descripcion">Descripción</label>
-            <textarea id="descripcion" th:field="*{descripcion}" rows="4"></textarea>
+            <textarea id="descripcion" th:field="*{descripcion}" rows="4" th:errorclass="campo-invalido"></textarea>
             <p class="error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">Error</p>
         </div>
 
         <!-- Many-to-One: desplegable de lugares -->
         <div class="field">
             <label for="venueId">Lugar</label>
-            <select id="venueId" th:field="*{venueId}">
+            <select id="venueId" th:field="*{venueId}" th:errorclass="campo-invalido">
                 <option value="">-- Selecciona un lugar --</option>
                 <option th:each="v : ${venues}"
                         th:value="${v.id}"

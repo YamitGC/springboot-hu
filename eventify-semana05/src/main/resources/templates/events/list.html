@@ -12,8 +12,8 @@
 <main>
     <h1>Catálogo de eventos</h1>
 
-    <div class="alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
-    <div class="alert-success" style="background:#fee2e2;color:#991b1b;" th:if="${error}" th:text="${error}"></div>
+    <div class="alert-success" th:if="${mensaje != null or successMessage != null}" th:text="${mensaje != null ? mensaje : successMessage}"></div>
+    <div class="alert-danger" th:if="${error != null or errorMessage != null}" th:text="${error != null ? error : errorMessage}"></div>
 
     <p><a class="btn" th:href="@{/admin/events/new}">+ Nuevo evento</a></p>
 

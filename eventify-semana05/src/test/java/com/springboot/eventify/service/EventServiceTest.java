@@ -34,6 +34,7 @@ class EventServiceTest {
     @Mock private EventRepository eventRepository;
     @Mock private VenueService venueService;
     @Mock private CategoryService categoryService;
+    @Mock private com.springboot.eventify.mapper.EventMapper eventMapper;
 
     @InjectMocks private EventService eventService;
 

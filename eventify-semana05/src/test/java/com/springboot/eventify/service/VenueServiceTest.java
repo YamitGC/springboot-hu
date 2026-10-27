@@ -27,6 +27,9 @@ class VenueServiceTest {
     @Mock
     private VenueRepository venueRepository;
 
+    @Mock
+    private com.springboot.eventify.mapper.VenueMapper venueMapper;
+
     @InjectMocks
     private VenueService venueService;
 

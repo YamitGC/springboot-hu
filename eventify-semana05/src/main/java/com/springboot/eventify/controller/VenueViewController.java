@@ -51,6 +51,7 @@ public class VenueViewController {
         }
         venueService.save(venue);
         redirectAttributes.addFlashAttribute("mensaje", "Lugar creado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Lugar creado exitosamente");
         return  "redirect:/admin/venues";
     }
 
@@ -64,6 +65,7 @@ public class VenueViewController {
     public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         venueService.delete(id);
         redirectAttributes.addFlashAttribute("mensaje", "Lugar eliminado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Lugar eliminado exitosamente");
         return "redirect:/admin/venues";
     }
 
@@ -77,18 +79,21 @@ public class VenueViewController {
         }
         venueService.update(id, venue);
         redirectAttributes.addFlashAttribute("mensaje", "Lugar actualizado exitosamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Lugar actualizado exitosamente");
         return "redirect:/admin/venues";
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String manejarNoEncontrado(ResourceNotFoundException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/admin/venues";
     }
 
     @ExceptionHandler(InvalidDataException.class)
     public String manejarDatoInvalido(InvalidDataException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/admin/venues";
     }
 }
